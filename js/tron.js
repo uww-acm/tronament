@@ -5,12 +5,15 @@ function Game() {
     this.canvas = new Canvas(document.getElementById("myCanvas"));
     this.players = [];
     this.count = 0;
-    this.playDir = 38;
     this.snake1x = [];
     this.snake1y = [];
 }
 
 Game.prototype.addPlayer = function(player) {
+    if (!(player instanceof Player)) {
+        throw new Exception("Object is not a player instance.");
+    }
+
     this.players.push(player);
 }
 
