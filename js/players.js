@@ -15,7 +15,7 @@ Player.DIRECTION_UP = 4;
  * Triggers the player to move and returns the direction the player wishes to move in.
  * @return int
  */
-Player.prototype.move = function () {
+Player.prototype.move = function(game) {
     return this.direction;
 }
 
@@ -33,33 +33,22 @@ UserPlayer.prototype = new Player();
 /**
  * Handles keyboard presses.
  */
-UserPlayer.prototype.checkKeyPressed = function (e) {
+UserPlayer.prototype.checkKeyPressed = function(e) {
     //up
     if (e.keyCode == "38") {
         this.direction = 4;
-        ct++;
-        $(".count").text("length = " + ct);
     }
-
     //down
     else if (e.keyCode == "40") {
         this.direction = 2;
-        ct++;
-        $(".count").text("length = " + ct);
     }
-
     //left
     else if (e.keyCode == "37") {
         this.direction = 3;
-        ct++;
-        $(".count").text("length = " + ct);
     }
-
     //right
     else if (e.keyCode == "39") {
         this.direction = 1;
-        ct++;
-        $(".count").text("length = " + ct);
     }
 }
 
@@ -76,7 +65,7 @@ DemoAiPlayer.prototype = new Player();
 /**
  * Moves based on some randomness and some checks.
  */
-DemoAiPlayer.prototype.move = function () {
+DemoAiPlayer.prototype.move = function(game) {
     var chng = Math.floor((Math.random() * 50) + 1);
     if (chng == 1 && this.direction != 3) {
         this.direction = 1;
@@ -88,29 +77,48 @@ DemoAiPlayer.prototype.move = function () {
         this.direction = 4;
     }
 
-    this.direction = this.rng(this.direction, x, y);
-    this.direction = this.rng(this.direction, x, y);
+    this.direction = this.rng(game, this.direction, this.x, this.y);
+    this.direction = this.rng(game, this.direction, this.x, this.y);
+
+    if (this.x <= 3) {
+        this.y = this.y + 1;
+        this.x = this.x + 1;
+        //return 2;
+    } else if (this.y <= 3) {
+        this.x = this.x + 1;
+        this.y = this.y + 1;
+        //return 1;
+    } else if (this.x >= 447) {
+        this.y = this.y + 1;
+        this.x = this.x - 1;
+        //return 4;
+
+    } else if (this.y >= 447) {
+        this.y = this.y - 1;
+        this.x = this.x + 1;
+        //return 1;
+    }
 
     return this.direction;
 }
 
 // helper for DemoAiPlayer.move()
-DemoAiPlayer.prototype.rng = function (mov, c, d) {
+DemoAiPlayer.prototype.rng = function(game, mov, c, d) {
     if (mov == 1) {
         $(".dir").text("direction: right");
         //moving right
-        for (var i = 0; i < count; i++) {
+        for (var i = 0; i < game.count; i++) {
             var f = c + 3;
-            if (f - snake1x[i] <= 0 && snake1y[i] == d) {
-                $(".bump").text("bump right " + snake1x[i] + " " + f);
+            if (f - game.snake1x[i] <= 0 && game.snake1y[i] == d) {
+                $(".bump").text("bump right " + game.snake1x[i] + " " + f);
                 return 4;
             }
         }
     } else if (mov == 2) {
         //moving down
         $(".dir").text("direction: down");
-        for (var i = 0; i < count; i++) {
-            if ((d + 3) - snake1y[i] <= 0 && snake1x[i] == c) {
+        for (var i = 0; i < game.count; i++) {
+            if ((d + 3) - game.snake1y[i] <= 0 && game.snake1x[i] == c) {
                 //direction change
                 $(".bump").text("bump down");
                 return 1;
@@ -119,8 +127,8 @@ DemoAiPlayer.prototype.rng = function (mov, c, d) {
     } else if (mov == 3) {
         //moving left
         $(".dir").text("direction: left");
-        for (var i = 0; i < count; i++) {
-            if ((c - 3) - snake1x[i] >= 0 && snake1y[i] == d) {
+        for (var i = 0; i < game.count; i++) {
+            if ((c - 3) - game.snake1x[i] >= 0 && game.snake1y[i] == d) {
                 //direction change
                 $(".bump").text("bump left");
                 return 2;
@@ -129,8 +137,8 @@ DemoAiPlayer.prototype.rng = function (mov, c, d) {
     } else if (mov == 4) {
         //moving up
         $(".dir").text("direction: up");
-        for (var i = 0; i < count; i++) {
-            if ((d - 3) - snake1y[i] >= 0 && snake1x[i] == c) {
+        for (var i = 0; i < game.count; i++) {
+            if ((d - 3) - game.snake1y[i] >= 0 && game.snake1x[i] == c) {
                 //direction change
                 $(".bump").text("bump up");
                 if (c == 3) {
