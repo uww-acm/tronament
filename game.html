@@ -1,7 +1,5 @@
 <html>
 	<head>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-
 		<style>
 			.box {
 				position: relative;
@@ -16,16 +14,45 @@
 				height: 200px;
 				border: solid black;
 			}
+			.wrapper {
+				display: block;
+				width: 800px;
+				height: 600px;
+				margin: 5em auto;
+			}
+			#game-screen {
+				display: block;
+				position: relative;
+				width: 100%;
+				height: 100%;
+			}
+			#game-screen canvas {
+				width: 100%;
+				height: 100%;
+			}
+			#game-screen button {
+				display: block;
+				position: absolute;
+			}
+			#game-screen #fullscreen-button {
+				top: 20px;
+				right: 20px;
+			}
+			#game-screen #reset-button {
+				top: 20px;
+				left: 20px;
+			}
 		</style>
 	</head>
 
 	<body>
-		<canvas id="myCanvas" width="450" height="450" style="border:1px solid #d3d3d3;"></canvas>
-
-		<p class="count">turns = 0</p>
-		<p class="counter">length = 0</p>
-		<p class="dir">direction: right</p>
-		<p class="bump"></p>
+		<div class="wrapper">
+			<main id="game-screen">
+				<canvas id="myCanvas" width="800" height="600" style="border:1px solid #d3d3d3;"></canvas>
+				<button id="reset-button">Reset</button>
+				<button id="fullscreen-button">Toggle Full Screen</button>
+			</main>
+		</div>
 
 		<script src="js/canvas.js"></script>
 		<script src="js/players.js"></script>
