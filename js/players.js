@@ -3,6 +3,7 @@
  */
 function Player() {
     this.direction = Player.DIRECTION_RIGHT;
+    this.name = "";
 }
 
 // some constants
@@ -23,8 +24,9 @@ Player.prototype.move = function(game) {
 /**
  * Player that is controlled with the keyboard.
  */
-function UserPlayer() {
+function UserPlayer(name) {
     window.addEventListener("keydown", this.checkKeyPressed.bind(this), false);
+    this.name = name;
 }
 
 // extend player
@@ -56,8 +58,9 @@ UserPlayer.prototype.checkKeyPressed = function(e) {
 /**
  * Original AI player.
  */
-function DemoAiPlayer() {
+function DemoAiPlayer(name) {
     this.direction = 1;
+    this.name = name;
 }
 
 // extend player
