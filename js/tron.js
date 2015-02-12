@@ -46,7 +46,7 @@ Game.prototype.playerDeath = function(i) {
  * Ends the game.
  */
 Game.prototype.end = function(player) {
-    this.canvas.context.fillStyle = "black";
+    this.canvas.context.fillStyle = "white";
     this.canvas.context.font = "bold 24px Arial";
     this.canvas.context.fillText("Game Over", this.canvas.getWidth() / 2 - 60, 210);
     this.canvas.context.fillText(player.name + " Wins", this.canvas.getWidth() / 2 - 70, 300); // not exactly centered
@@ -99,23 +99,33 @@ Game.prototype.reset = function() {
 
     // add some players
     var player1 = new DemoAiPlayer("Blue");
+    player1.direction = Math.floor(Math.random() * 4) + 1;
     player1.x = 200;
     player1.y = 200;
     player1.color = "blue";
 
     var player2 = new DemoAiPlayer("Red");
-    player2.x = 100;
-    player2.y = 100;
+    player2.direction = Math.floor(Math.random() * 4) + 1;
+    player2.x = 600;
+    player2.y = 200;
     player2.color = "red";
 
     var player3 = new DemoAiPlayer("Green");
-    player3.x = 150;
-    player3.y = 250;
+    player3.direction = Math.floor(Math.random() * 4) + 1;
+    player3.x = 200;
+    player3.y = 400;
     player3.color = "green";
+
+    var player4 = new DemoAiPlayer("Orange");
+    player4.direction = Math.floor(Math.random() * 4) + 1;
+    player4.x = 600;
+    player4.y = 400;
+    player4.color = "orange";
 
     game.addPlayer(player1);
     game.addPlayer(player2);
     game.addPlayer(player3);
+    game.addPlayer(player4);
 }
 
 /**

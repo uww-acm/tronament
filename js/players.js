@@ -2,7 +2,7 @@
  * Base class for players.
  */
 function Player() {
-    this.direction = Player.DIRECTION_RIGHT;
+    this.direction = Math.floor(Math.random() * 4) + 1;
     this.name = "";
 }
 
@@ -70,7 +70,7 @@ DemoAiPlayer.prototype = new Player();
  * Moves based on some randomness and some checks.
  */
 DemoAiPlayer.prototype.move = function(game) {
-    var move = Math.floor((Math.random() * 100) + 1);
+    var move = Math.floor((Math.random() * 200) + 1);
 
     if (move == Player.DIRECTION_RIGHT && this.directionIsSafe(move)) {
         this.direction = Player.DIRECTION_RIGHT;
