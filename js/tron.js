@@ -173,6 +173,7 @@ document.getElementById("fullscreen-button").addEventListener("click", function(
 
 
 document.getElementById("reset-button").addEventListener("click", function(e) {
+    clearInterval(game.timer);
     game.reset();
     game.start();
 });
