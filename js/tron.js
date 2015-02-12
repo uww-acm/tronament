@@ -3,8 +3,6 @@
  */
 function Game() {
     this.canvas = new Canvas(document.getElementById("myCanvas"));
-    this.players = [];
-    this.collisionMap = [[]];
 }
 
 Game.prototype.addPlayer = function(player) {
@@ -36,13 +34,22 @@ Game.prototype.query = function(x, y) {
 }
 
 /**
+ * Removes player from the game.
+ */
+Game.prototype.playerDeath = function(i) {
+    this.players.splice(i, 1);
+    if (this.players.length == 1)
+        this.end(this.players[0]);
+}
+
+/**
  * Ends the game.
  */
 Game.prototype.end = function(player) {
     this.canvas.context.fillStyle = "black";
     this.canvas.context.font = "bold 24px Arial";
     this.canvas.context.fillText("Game Over", this.canvas.getWidth() / 2 - 60, 210);
-    this.canvas.context.fillText("Player " + player + " Loses", this.canvas.getWidth() / 2 - 80, 300);
+    this.canvas.context.fillText(player.name + " Wins", this.canvas.getWidth() / 2 - 70, 300); // not exactly centered
     clearInterval(this.timer);
 }
 
@@ -76,15 +83,39 @@ Game.prototype.tick = function() {
         this.canvas.context.closePath();
 
         if (this.query(this.players[i].x, this.players[i].y)) {
-            return this.end(i + 1);
+            this.playerDeath(i);
         }
-        this.fill(this.players[i].x, this.players[i].y);
+        else
+            this.fill(this.players[i].x, this.players[i].y);
     }
 }
 
 Game.prototype.reset = function() {
     this.collisionMap = [[]];
     this.canvas.context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+    this.players = [];
+
+
+
+    // add some players
+    var player1 = new DemoAiPlayer("Blue");
+    player1.x = 200;
+    player1.y = 200;
+    player1.color = "blue";
+
+    var player2 = new DemoAiPlayer("Red");
+    player2.x = 100;
+    player2.y = 100;
+    player2.color = "red";
+
+    var player3 = new DemoAiPlayer("Green");
+    player3.x = 150;
+    player3.y = 250;
+    player3.color = "green";
+
+    game.addPlayer(player1);
+    game.addPlayer(player2);
+    game.addPlayer(player3);
 }
 
 /**
@@ -96,22 +127,9 @@ Game.prototype.start = function() {
     }.bind(this), 4);
 }
 
-// run the game
+// create the game
 var game = new Game();
-
-// add some players
-var player1 = new DemoAiPlayer();
-player1.x = 200;
-player1.y = 200;
-player1.color = "blue";
-
-var player2 = new DemoAiPlayer();
-player2.x = 100;
-player2.y = 100;
-player2.color = "red";
-
-game.addPlayer(player1);
-game.addPlayer(player2);
+game.reset();
 
 // start the game
 game.start();
@@ -145,7 +163,7 @@ document.getElementById("fullscreen-button").addEventListener("click", function(
 
 
 document.getElementById("reset-button").addEventListener("click", function(e) {
-    game.end();
+    clearInterval(game.timer);
     game.reset();
     game.start();
 });
