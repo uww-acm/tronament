@@ -4,9 +4,7 @@
 function Game() {
     this.canvas = new Canvas(document.getElementById("myCanvas"));
     this.players = [];
-    this.count = 0;
-    this.snake1x = [];
-    this.snake1y = [];
+    this.collisionMap = [[]];
 }
 
 Game.prototype.addPlayer = function(player) {
@@ -17,36 +15,34 @@ Game.prototype.addPlayer = function(player) {
     this.players.push(player);
 }
 
-Game.prototype.load = function(c, d) {
-    this.snake1x[this.count] = c;
-    this.snake1y[this.count] = d;
-    $(".counter").text("length = " + this.count + " x= " + this.snake1x[this.count] + " y= " + this.snake1y[this.count]);
-    this.count++;
+Game.prototype.fill = function(x, y) {
+    if (this.collisionMap[x] == undefined) {
+        this.collisionMap[x] = [];
+    }
+    this.collisionMap[x][y] = 1;
 }
 
-Game.prototype.test = function(x, y) {
-    // check if the position is out of bounds
-    if (x < 0 || x >= this.canvas.width || y < 0 || y >= this.canvas.height) {
-        this.end();
-        return false;
+/**
+ * Queries the game for what is at a location.
+ */
+Game.prototype.query = function(x, y) {
+    if (x < 0 || x >= this.canvas.getWidth() || y < 0 || y >= this.canvas.getHeight()) {
+        return true;
     }
-
-    // check if the position intersects with a trail
-    for (var i = 0; i < this.count; i++) {
-        if (x == this.snake1x[i] && y == this.snake1y[i]) {
-            this.end();
-            return false;
-        }
+    if (this.collisionMap[x] != undefined && this.collisionMap[x][y] == 1) {
+        return true;
     }
+    return false;
 }
 
 /**
  * Ends the game.
  */
-Game.prototype.end = function() {
+Game.prototype.end = function(player) {
     this.canvas.context.fillStyle = "black";
     this.canvas.context.font = "bold 24px Arial";
-    this.canvas.context.fillText("Game Over", 150, 210);
+    this.canvas.context.fillText("Game Over", this.canvas.getWidth() / 2 - 60, 210);
+    this.canvas.context.fillText("Player " + player + " Loses", this.canvas.getWidth() / 2 - 80, 300);
     clearInterval(this.timer);
 }
 
@@ -64,13 +60,13 @@ Game.prototype.tick = function() {
         var move = this.players[i].move(this);
 
         // adjust the player position based on the direction
-        if (move == 1) {
+        if (move == Player.DIRECTION_RIGHT) {
             this.players[i].x++;
-        } else if (move == 2) {
+        } else if (move == Player.DIRECTION_DOWN) {
             this.players[i].y++;
-        } else if (move == 3) {
+        } else if (move == Player.DIRECTION_LEFT) {
             this.players[i].x--;
-        } else if (move == 4) {
+        } else if (move == Player.DIRECTION_UP) {
             this.players[i].y--;
         }
 
@@ -79,9 +75,16 @@ Game.prototype.tick = function() {
         this.canvas.context.stroke();
         this.canvas.context.closePath();
 
-        this.test(this.players[i].x, this.players[i].y);
-        this.load(this.players[i].x, this.players[i].y);
+        if (this.query(this.players[i].x, this.players[i].y)) {
+            return this.end(i + 1);
+        }
+        this.fill(this.players[i].x, this.players[i].y);
     }
+}
+
+Game.prototype.reset = function() {
+    this.collisionMap = [[]];
+    this.canvas.context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 }
 
 /**
@@ -90,21 +93,21 @@ Game.prototype.tick = function() {
 Game.prototype.start = function() {
     this.timer = setInterval(function() {
         this.tick();
-    }.bind(this), 10);
+    }.bind(this), 4);
 }
 
 // run the game
 var game = new Game();
 
 // add some players
-var player1 = new UserPlayer();
+var player1 = new DemoAiPlayer();
 player1.x = 200;
 player1.y = 200;
 player1.color = "blue";
 
 var player2 = new DemoAiPlayer();
-player2.x = 20;
-player2.y = 20;
+player2.x = 100;
+player2.y = 100;
 player2.color = "red";
 
 game.addPlayer(player1);
@@ -112,3 +115,37 @@ game.addPlayer(player2);
 
 // start the game
 game.start();
+
+
+
+document.getElementById("fullscreen-button").addEventListener("click", function(e) {
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        var element = document.getElementById("game-screen");
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+});
+
+
+document.getElementById("reset-button").addEventListener("click", function(e) {
+    game.end();
+    game.reset();
+    game.start();
+});
