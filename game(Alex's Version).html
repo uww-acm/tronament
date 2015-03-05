@@ -1,0 +1,184 @@
+<html>
+
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+<style>
+.box{position: relative; display: inline-block; background-color: blue; width: 10px; height: 10px;}
+.bor{position: relative; width: 200px; height: 200px; border: solid black;}
+</style>
+</head>
+
+<body>
+
+
+<canvas id="myCanvas" width="450" height="450" style="border:1px solid #d3d3d3;"></canvas>
+
+<p class ="count">turns = 0</p>
+<p class ="counter">length = 0</p>
+<p class ="dir">direction: right</p>
+<p class ="bump"></p>
+<script>
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+//starting position for player 1
+var x = 20;
+var y = 20;
+
+//starting position for player 2
+var a = 200;
+var b = 200;
+
+var ct = 0;
+var count = 0;
+//starting direction player 1
+var mov = 1;
+//starting direction player 1
+var mov2 = 1;
+//variable to track which player is currently moving
+var player = 1;
+
+//array to store all players past positions
+var snake1x = [];
+var snake1y = [];
+
+
+//function to load players positions into the array, and update data
+function load(c,d){
+snake1x[count]=c;
+snake1y[count]=d;
+$(".counter").text("length = " + count + " x= " + snake1x[count] + " y= " + snake1y[count]); 
+ count++;
+}
+//tests to see if a player runs into a wall or another player, and tells which player wins
+function test(c,d){
+var play = "Player 2";
+if(player == 2){
+play = "Player 1";
+}
+
+for(var i = 0; i<count; i++){
+//out of bounds dimensions can be changed here
+if(c==snake1x[i] && d==snake1y[i] || c==0 || d==0 || c==450 || d==450){
+
+
+alert("game over " + play + " wins.");
+clearInterval(timer);
+return false;
+}
+}
+
+
+}
+
+
+function targ1(){
+
+//insert code here
+
+//example of randomly moving AI (it sucks, you probably shouldn't use it)
+
+/*var chng = Math.floor((Math.random() * 50)+1);
+	if(chng == 1 && mov != 3){
+	mov = 1;
+	}else if(chng == 2 && mov != 4){
+	mov = 2;
+	}else if(chng == 3 && mov != 1){
+	mov = 3;
+	}else if(chng == 4 && mov != 2){
+	 mov = 4;
+	}
+*/
+
+}
+
+
+function targ2(){
+
+//insert code here
+
+}
+
+//moves the players based on the direction 1 - right 2 - down 3 - left 4 - up
+function move() {
+
+//starts player 1 moving
+ctx.beginPath();
+ctx.strokeStyle = "red";
+//moves pointer to player 1's last position
+ctx.moveTo(x, y);
+//implements player 1's AI (most likely to change the mov variable, this function is not allowed to change mov2)
+targ1();
+
+player = 1;
+
+//decides direction player 1 moves
+	if(mov == 1){
+	//move right
+	x=x+1;
+	}else if(mov == 2){
+	//move down
+	y=y+1;
+	}else if(mov == 3){
+	//move left
+	x=x-1;
+	}else if(mov == 4){
+	//move up
+	y=y-1;
+	}
+	
+//moves player 1, tests for run in, loads into position storage
+	
+	ctx.lineTo(x, y);
+	ctx.stroke();
+	ctx.closePath();
+	test(x,y);
+	load(x,y);
+	
+	
+//starts player 2 moving
+ctx.beginPath();
+ctx.strokeStyle = "blue";
+//moves pointer to player 2's last position
+ctx.moveTo(a, b);
+//implements player 2's AI (most likely to change the mov2 variable, this function is not allowed to change mov)
+targ2();
+
+player = 2;
+
+//decides direction player 2 moves
+	if(mov2 == 1){
+	a=a+1;
+	}else if(mov2 == 2){
+	b=b+1;
+	}else if(mov2 == 3){
+	a=a-1;
+	}else if(mov2 == 4){
+	b=b-1;
+	}
+	
+//moves player 2, tests for run in, loads into position storage
+	
+	ctx.lineTo(a, b);
+	ctx.stroke();
+	ctx.closePath();
+	test(a,b);
+	load(a,b);	
+	
+
+}
+
+
+//this is the timer.  the move function is implemented repeatedly over time.
+var timer = setInterval(function(){move()}, 50);
+
+ 
+
+
+
+</script>
+
+
+</body>
+</html>
