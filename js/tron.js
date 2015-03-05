@@ -5,6 +5,11 @@ function Game() {
     this.canvas = new Canvas(document.getElementById("myCanvas"));
 }
 
+/**
+ * Adds a new player to the game
+ *
+ * @param Player player A player instance to add.
+ */
 Game.prototype.addPlayer = function(player) {
     if (!(player instanceof Player)) {
         throw new Exception("Object is not a player instance.");
@@ -13,6 +18,12 @@ Game.prototype.addPlayer = function(player) {
     this.players.push(player);
 }
 
+/**
+ * Fills a player's position into the collision map.
+ *
+ * @param Number x The x-coordinate of the position.
+ * @param Number y The y-coordinate of the position.
+ */
 Game.prototype.fill = function(x, y) {
     if (this.collisionMap[x] == undefined) {
         this.collisionMap[x] = [];
@@ -22,6 +33,9 @@ Game.prototype.fill = function(x, y) {
 
 /**
  * Queries the game for what is at a location.
+ *
+ * @param Number x The x-coordinate of the position.
+ * @param Number y The y-coordinate of the position.
  */
 Game.prototype.query = function(x, y) {
     if (x < 0 || x >= this.canvas.getWidth() || y < 0 || y >= this.canvas.getHeight()) {
@@ -34,7 +48,7 @@ Game.prototype.query = function(x, y) {
 }
 
 /**
- * Removes player from the game.
+ * Removes a player from the game.
  */
 Game.prototype.playerDeath = function(i) {
     this.players.splice(i, 1);
@@ -90,34 +104,39 @@ Game.prototype.tick = function() {
     }
 }
 
+/**
+ * Resets the game to an initial state.
+ */
 Game.prototype.reset = function() {
     this.collisionMap = [[]];
     this.canvas.context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
     this.players = [];
 
-
-
     // add some players
     var player1 = new DemoAiPlayer("Blue");
     player1.direction = Math.floor(Math.random() * 4) + 1;
+    //starting position for player 1
     player1.x = 200;
     player1.y = 200;
     player1.color = "blue";
 
     var player2 = new DemoAiPlayer("Red");
     player2.direction = Math.floor(Math.random() * 4) + 1;
+    //starting position for player 2
     player2.x = 600;
     player2.y = 200;
     player2.color = "red";
 
     var player3 = new DemoAiPlayer("Green");
     player3.direction = Math.floor(Math.random() * 4) + 1;
+    //starting position for player 3
     player3.x = 200;
     player3.y = 400;
     player3.color = "green";
 
     var player4 = new DemoAiPlayer("Orange");
     player4.direction = Math.floor(Math.random() * 4) + 1;
+    //starting position for player 4
     player4.x = 600;
     player4.y = 400;
     player4.color = "orange";
@@ -143,37 +162,3 @@ game.reset();
 
 // start the game
 game.start();
-
-
-
-document.getElementById("fullscreen-button").addEventListener("click", function(e) {
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        var element = document.getElementById("game-screen");
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-});
-
-
-document.getElementById("reset-button").addEventListener("click", function(e) {
-    clearInterval(game.timer);
-    game.reset();
-    game.start();
-});
