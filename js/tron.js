@@ -46,7 +46,7 @@ Game.prototype.playerDeath = function(i) {
  * Ends the game.
  */
 Game.prototype.end = function(player) {
-    this.canvas.context.fillStyle = "white";
+    this.canvas.context.fillStyle = "black";
     this.canvas.context.font = "bold 24px Arial";
     this.canvas.context.fillText("Game Over", this.canvas.getWidth() / 2 - 60, 210);
     this.canvas.context.fillText(player.name + " Wins", this.canvas.getWidth() / 2 - 70, 300); // not exactly centered
@@ -134,7 +134,7 @@ Game.prototype.reset = function() {
 Game.prototype.start = function() {
     this.timer = setInterval(function() {
         this.tick();
-    }.bind(this), 4);
+    }.bind(this), 10);
 }
 
 // create the game
