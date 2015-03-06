@@ -5,6 +5,8 @@ window.tronament = new function() {
     this.DIRECTION_LEFT = 3;
     this.DIRECTION_UP = 4;
 
+    this.speed = 1;
+
     var canvas, context;
 
     var aiModules = [];
@@ -12,7 +14,16 @@ window.tronament = new function() {
     var playerCount;
     var fileChooser;
     var collisionMap = [[]];
+    var boardWidth = 100;
+    var boardHeight = 100;
+    var running = false;
+    var timer;
 
+    /**
+     * Initializes the Tronament game engine.
+     *
+     * @param Element canvasElement The canvas element to be used for drawing.
+     */
     this.init = function(canvasElement) {
         canvas = canvasElement;
         context = canvas.getContext("2d");
@@ -46,17 +57,6 @@ window.tronament = new function() {
         fileChooser.click();
     }
 
-    var handleFiles = function(files) {
-        // get the chosen file
-        var file = fileChooser.files[0];
-        var objectURL = window.URL.createObjectURL(file);
-
-        // load the script
-        var script = document.createElement("script");
-        script.src = objectURL;
-        document.body.appendChild(script);
-    }.bind(this);
-
     /**
      * Adds a new player to the game
      *
@@ -78,7 +78,7 @@ window.tronament = new function() {
      * @param Number y The y-coordinate of the position.
      */
     this.query = function(x, y) {
-        if (x <= 0 || x >= canvas.width - 1 || y <= 0 || y >= canvas.height - 1) {
+        if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
             return true;
         }
         if (collisionMap[x] != undefined && collisionMap[x][y] != undefined) {
@@ -91,8 +91,11 @@ window.tronament = new function() {
      * Ends the game.
      */
     this.end = function(player) {
-        alert(player.name + " Wins");
-        clearInterval(this.timer);
+        //alert(player.name + " Wins");
+        clearTimeout(timer);
+        running = false;
+        this.reset();
+        this.start();
     }
 
     /**
@@ -102,18 +105,28 @@ window.tronament = new function() {
         collisionMap = [[]];
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.players = [];
+        running = false;
 
         this.addPlayer("demo-ai", 10, 10, "blue");
-        this.addPlayer("demo-ai", canvas.width - 10, 10, "#2daebf");
+        this.addPlayer("demo-ai", boardWidth - 10, boardHeight - 10, "#2daebf");
     }
 
     /**
      * Starts the game loop.
      */
     this.start = function() {
-        this.timer = setInterval(function() {
-            tick();
-        }, 10);
+        running = true;
+        mainLoop();
+    }
+
+    var mainLoop = function() {
+        if (running) {
+            timer = setTimeout(function() {
+                window.requestAnimationFrame(mainLoop);
+            }, 5 / window.tronament.speed);
+        }
+
+        tick();
     }
 
     /**
@@ -121,6 +134,8 @@ window.tronament = new function() {
      */
     var render = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        var squareWidth = canvas.width / boardWidth;
+        var squareHeight = canvas.height / boardHeight;
 
         for (var x = 0; x < collisionMap.length; x++) {
             if (collisionMap[x] != undefined) {
@@ -128,7 +143,7 @@ window.tronament = new function() {
                     if (collisionMap[x][y] != undefined) {
                         var player = collisionMap[x][y];
                         context.fillStyle = player.color;
-                        context.fillRect(x, y, 1, 1);
+                        context.fillRect(x * squareWidth, y * squareHeight, squareWidth, squareHeight);
                     }
                 }
             }
@@ -189,5 +204,21 @@ window.tronament = new function() {
         this.players.splice(i, 1);
         if (this.players.length == 1)
             this.end(this.players[0]);
+    }.bind(this);
+
+    /**
+     * Handles files that are chosen with the file chooser dialog.
+     *
+     * @param Array files An array of files chosen by the user.
+     */
+    var handleFiles = function(files) {
+        // get the chosen file
+        var file = fileChooser.files[0];
+        var objectURL = window.URL.createObjectURL(file);
+
+        // load the script
+        var script = document.createElement("script");
+        script.src = objectURL;
+        document.body.appendChild(script);
     }.bind(this);
 };
