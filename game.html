@@ -5,7 +5,7 @@
     </head>
 
     <body>
-        <div id="control-panel">
+        <div class="panel" id="control-panel">
             <button id="load-module-button">Load Module</button>
             <button id="reset-button">Reset</button>
             <button id="start-button">Start</button>
@@ -13,7 +13,7 @@
         </div>
 
         <div id="display">
-            <div id="game-screen">
+            <div class="panel" id="game-screen">
                 <canvas id="myCanvas" width="800" height="800"></canvas>
             </div>
         </div>
@@ -21,6 +21,14 @@
         <script src="js/tronament.js"></script>
         <script>
             tronament.init(document.getElementById("myCanvas"));
+
+            var buttons = document.querySelectorAll("button");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener("mouseover", function(e) {
+                    var audio = new Audio('assets/sound40.mp3');
+                    audio.play();
+                }, false);1
+            }
 
             document.getElementById("start-button").addEventListener("click", function(e) {
                 tronament.start();
@@ -34,7 +42,7 @@
             // handle the fullscreen button
             document.getElementById("fullscreen-button").addEventListener("click", function(e) {
                 if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    var element = document.getElementById("game-screen");
+                    var element = document.body;
                     if (element.requestFullscreen) {
                         element.requestFullscreen();
                     } else if (element.msRequestFullscreen) {
