@@ -11,6 +11,7 @@ window.tronament = new function() {
     var players = [];
     var playerCount;
     var fileChooser;
+    var collisionMap = [[]];
 
     this.init = function(canvasElement) {
         canvas = canvasElement;
@@ -80,7 +81,7 @@ window.tronament = new function() {
         if (x <= 0 || x >= canvas.width - 1 || y <= 0 || y >= canvas.height - 1) {
             return true;
         }
-        if (this.collisionMap[x] != undefined && this.collisionMap[x][y] == 1) {
+        if (collisionMap[x] != undefined && collisionMap[x][y] != undefined) {
             return true;
         }
         return false;
@@ -90,10 +91,7 @@ window.tronament = new function() {
      * Ends the game.
      */
     this.end = function(player) {
-        context.fillStyle = "black";
-        context.font = "bold 24px Arial";
-        context.fillText("Game Over", canvas.width / 2 - 60, 210);
-        context.fillText(player.name + " Wins", canvas.width / 2 - 70, 300); // not exactly centered
+        alert(player.name + " Wins");
         clearInterval(this.timer);
     }
 
@@ -101,14 +99,12 @@ window.tronament = new function() {
      * Resets the game to an initial state.
      */
     this.reset = function() {
-        this.collisionMap = [[]];
+        collisionMap = [[]];
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.players = [];
 
         this.addPlayer("demo-ai", 10, 10, "blue");
-        this.addPlayer("demo-ai", canvas.width - 10, 10, "red");
-        this.addPlayer("demo-ai", 10, canvas.height - 10, "green");
-        this.addPlayer("demo-ai", canvas.width - 10, canvas.height - 10, "orange");
+        this.addPlayer("demo-ai", canvas.width - 10, 10, "#2daebf");
     }
 
     /**
@@ -119,6 +115,25 @@ window.tronament = new function() {
             tick();
         }, 10);
     }
+
+    /**
+     * Renders the game screen to the canvas.
+     */
+    var render = function() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (var x = 0; x < collisionMap.length; x++) {
+            if (collisionMap[x] != undefined) {
+                for (var y = 0; y < collisionMap[x].length; y++) {
+                    if (collisionMap[x][y] != undefined) {
+                        var player = collisionMap[x][y];
+                        context.fillStyle = player.color;
+                        context.fillRect(x, y, 1, 1);
+                    }
+                }
+            }
+        }
+    }.bind(this);
 
     /**
      * Executes a single tick of the game loop.
@@ -141,15 +156,17 @@ window.tronament = new function() {
             }
 
             // draw the trail
-            context.fillStyle = this.players[i].color;
-            context.fillRect(this.players[i].x, this.players[i].y, 1, 1);
+            //context.fillStyle = this.players[i].color;
+            //context.fillRect(this.players[i].x, this.players[i].y, 1, 1);
 
             if (this.query(this.players[i].x, this.players[i].y)) {
                 playerDeath(i);
+            } else {
+                fill(this.players[i], this.players[i].x, this.players[i].y);
             }
-            else
-                fill(this.players[i].x, this.players[i].y);
         }
+
+        render();
     }.bind(this);
 
     /**
@@ -158,11 +175,11 @@ window.tronament = new function() {
      * @param Number x The x-coordinate of the position.
      * @param Number y The y-coordinate of the position.
      */
-    var fill = function(x, y) {
-        if (this.collisionMap[x] == undefined) {
-            this.collisionMap[x] = [];
+    var fill = function(player, x, y) {
+        if (collisionMap[x] == undefined) {
+            collisionMap[x] = [];
         }
-        this.collisionMap[x][y] = 1;
+        collisionMap[x][y] = player;
     }.bind(this);
 
     /**

@@ -42,7 +42,7 @@
             // handle the fullscreen button
             document.getElementById("fullscreen-button").addEventListener("click", function(e) {
                 if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    var element = document.body;
+                    var element = document.documentElement;
                     if (element.requestFullscreen) {
                         element.requestFullscreen();
                     } else if (element.msRequestFullscreen) {

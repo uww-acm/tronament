@@ -43,7 +43,7 @@ button {
     background-image: none;
 }
 
-button:hover, button:focus, button:active {
+button:hover, button:active {
     box-shadow: 0 0 18px #2daebf;
 }
 
