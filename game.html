@@ -1,26 +1,36 @@
 <html>
     <head>
-        <title>Tronament</title>
+        <title>TRONament</title>
         <link rel="stylesheet" type="text/css" href="assets/style.css">
     </head>
 
     <body>
         <div class="panel" id="control-panel">
+            <h1>TRONament</h1>
             <button id="load-module-button">Load Module</button>
             <button id="reset-button">Reset</button>
             <button id="start-button">Start</button>
             <button id="fullscreen-button">Toggle Full Screen</button>
+
+            <label for="speed">Speed</label>
+            <select id="speed">
+                <option value="0.25">0.25x</option>
+                <option value="0.5">0.5x</option>
+                <option value="1" selected>1x</option>
+                <option value="2">2x</option>
+                <option value="5">5x</option>
+            </select>
         </div>
 
-        <div id="display">
-            <div class="panel" id="game-screen">
-                <canvas id="myCanvas" width="400" height="300"></canvas>
-            </div>
+        <div class="panel" id="display">
+            <canvas id="game-screen" width="800" height="800"></canvas>
         </div>
 
         <script src="js/tronament.js"></script>
+        <script src="js/demoAi.js"></script>
+        <script src="js/userPlayer.js"></script>
         <script>
-            tronament.init(document.getElementById("myCanvas"));
+            tronament.init(document.getElementById("game-screen"));
 
             var buttons = document.querySelectorAll("button");
             for (var i = 0; i < buttons.length; i++) {
@@ -29,6 +39,10 @@
                     audio.play();
                 }, false);1
             }
+
+            document.getElementById("speed").addEventListener("change", function(e) {
+                tronament.speed = parseFloat(this.value);
+            }, false);
 
             document.getElementById("start-button").addEventListener("click", function(e) {
                 tronament.start();
