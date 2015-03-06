@@ -105,10 +105,10 @@ window.tronament = new function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.players = [];
 
-        this.addPlayer("demo-ai", 100, 100, "blue");
-        this.addPlayer("demo-ai", 300, 100, "red");
-        this.addPlayer("demo-ai", 100, 300, "green");
-        this.addPlayer("demo-ai", 300, 300, "orange");
+        this.addPlayer("demo-ai", 10, 10, "blue");
+        this.addPlayer("demo-ai", canvas.width - 10, 10, "red");
+        this.addPlayer("demo-ai", 10, canvas.height - 10, "green");
+        this.addPlayer("demo-ai", canvas.width - 10, canvas.height - 10, "orange");
     }
 
     /**
