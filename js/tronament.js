@@ -77,7 +77,7 @@ window.tronament = new function() {
      * @param Number y The y-coordinate of the position.
      */
     this.query = function(x, y) {
-        if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+        if (x <= 0 || x >= canvas.width - 1 || y <= 0 || y >= canvas.height - 1) {
             return true;
         }
         if (this.collisionMap[x] != undefined && this.collisionMap[x][y] == 1) {
@@ -105,10 +105,10 @@ window.tronament = new function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.players = [];
 
-        this.addPlayer("demo-ai", 200, 200, "blue");
-        this.addPlayer("demo-ai", 600, 200, "red");
-        this.addPlayer("demo-ai", 200, 600, "green");
-        this.addPlayer("demo-ai", 600, 600, "orange");
+        this.addPlayer("demo-ai", 100, 100, "blue");
+        this.addPlayer("demo-ai", 300, 100, "red");
+        this.addPlayer("demo-ai", 100, 300, "green");
+        this.addPlayer("demo-ai", 300, 300, "orange");
     }
 
     /**
@@ -126,10 +126,6 @@ window.tronament = new function() {
     var tick = function() {
         // ask each player to respond with their move
         for (var i = 0; i < this.players.length; i++) {
-            context.beginPath();
-            context.strokeStyle = this.players[i].color;
-            context.moveTo(this.players[i].x, this.players[i].y);
-
             // tell the player to move
             var move = this.players[i].move(this);
 
@@ -145,9 +141,8 @@ window.tronament = new function() {
             }
 
             // draw the trail
-            context.lineTo(this.players[i].x, this.players[i].y);
-            context.stroke();
-            context.closePath();
+            context.fillStyle = this.players[i].color;
+            context.fillRect(this.players[i].x, this.players[i].y, 1, 1);
 
             if (this.query(this.players[i].x, this.players[i].y)) {
                 playerDeath(i);
