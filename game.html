@@ -18,8 +18,20 @@
                 <option value="0.5">0.5x</option>
                 <option value="1" selected>1x</option>
                 <option value="2">2x</option>
-                <option value="5">5x</option>
+                <option value="4">4x</option>
+                <option value="8">8x</option>
+                <option value="32">32x</option>
+                <option value="128">128x</option>
             </select>
+
+            <label for="fps-toggle">Show FPS</label>
+            <input type="checkbox" id="fps-toggle">
+
+            <div class="player-widget">
+            </div>
+
+            <div class="player-widget">
+            </div>
         </div>
 
         <div class="panel" id="display">
@@ -42,6 +54,10 @@
 
             document.getElementById("speed").addEventListener("change", function(e) {
                 tronament.speed = parseFloat(this.value);
+            }, false);
+
+            document.getElementById("fps-toggle").addEventListener("change", function(e) {
+                tronament.debug.showFps = this.checked;
             }, false);
 
             document.getElementById("start-button").addEventListener("click", function(e) {

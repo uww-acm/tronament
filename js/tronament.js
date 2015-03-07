@@ -1,12 +1,25 @@
 window.tronament = new function() {
     // some constants
-    this.DIRECTION_RIGHT = 1;
+    this.DIRECTION_UP = 1;
     this.DIRECTION_DOWN = 2;
     this.DIRECTION_LEFT = 3;
-    this.DIRECTION_UP = 4;
+    this.DIRECTION_RIGHT = 4;
 
+    // the speed the players move at (a multiplier, so 2 means 2x speed)
     this.speed = 1;
 
+    // some debug options
+    this.debug = {
+        // indicates if the framerate should be displayed on the canvas
+        showFps: false,
+        // the current frame rate
+        fps: 0
+    };
+
+    // times used for scheduling, keeping track of frame rate, etc...
+    var lastCalledTime, lastSecondTime, lastTickTime;
+
+    // variables used for drawing to the canvas
     var canvas, context;
 
     var aiModules = [];
@@ -92,7 +105,7 @@ window.tronament = new function() {
      */
     this.end = function(player) {
         //alert(player.name + " Wins");
-        clearTimeout(timer);
+        cancelAnimationFrame(timer);
         running = false;
         this.reset();
         this.start();
@@ -120,23 +133,55 @@ window.tronament = new function() {
     }
 
     var mainLoop = function() {
+        // keep running the loop until `running` is false
         if (running) {
-            timer = setTimeout(function() {
-                window.requestAnimationFrame(mainLoop);
-            }, 5 / window.tronament.speed);
+            // run the next iteration when it is most convenient for the browser
+            timer = requestAnimationFrame(mainLoop);
         }
 
-        tick();
-    }
+        // initialize all timers
+        if (!lastCalledTime || !lastSecondTime || !lastTickTime) {
+            lastTickTime = lastSecondTime = lastCalledTime = Date.now();
+            this.debug.fps = 0;
+        } else {
+            // update fps every second
+            if (Date.now() - lastSecondTime > 1000) {
+                var delta = (new Date().getTime() - lastCalledTime) / 1000;
+                this.debug.fps = 1 / delta;
+                lastSecondTime = Date.now();
+            }
+
+            // update main timer
+            lastCalledTime = Date.now();
+        }
+
+        // check if it is time to run the next game tick based on speed setting
+        if (Date.now() - lastTickTime > 20 * (1 / this.speed)) {
+            tick();
+            if (this.speed > 1) {
+                for (var i = 0; i < this.speed; i++) {
+                    tick();
+                }
+            }
+            lastTickTime = Date.now(); // update tick time since we just called it
+        }
+
+        // render the display canvas
+        render();
+    }.bind(this);
 
     /**
      * Renders the game screen to the canvas.
      */
     var render = function() {
+        // wipe the canvas clean
         context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // calculate the size of the trails
         var squareWidth = canvas.width / boardWidth;
         var squareHeight = canvas.height / boardHeight;
 
+        // render all trails
         for (var x = 0; x < collisionMap.length; x++) {
             if (collisionMap[x] != undefined) {
                 for (var y = 0; y < collisionMap[x].length; y++) {
@@ -147,6 +192,15 @@ window.tronament = new function() {
                     }
                 }
             }
+        }
+
+        // render debug info
+        if (this.debug.showFps) {
+            context.fillStyle = "white";
+            context.font = "24px Silkscreen";
+            context.textAlign = "end";
+            context.textBaseline = "bottom";
+            context.fillText("FPS: " + this.debug.fps.toFixed(2), canvas.width - 10, canvas.height - 10);
         }
     }.bind(this);
 
@@ -180,8 +234,6 @@ window.tronament = new function() {
                 fill(this.players[i], this.players[i].x, this.players[i].y);
             }
         }
-
-        render();
     }.bind(this);
 
     /**
