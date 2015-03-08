@@ -21,6 +21,7 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
+    font-size: 1.3125vmax;
 }
 
 body {
@@ -28,52 +29,124 @@ body {
     background-image: url("background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.wrapper {
-    padding: 1em;
-}
-
-button {
-    display: inline-block;
-    margin: 0.5em;
-    padding: 0.75em 1.25em;
-    min-width: 6em;
-    color: white;
-    background-color: #2daebf;
-    border: 1px solid #238896;
-    border-radius: 0.25em;
+/* background */
+.ui-layer, .dialog, button {
+    background-color: rgba(11, 16, 22, 0.75);
     background-image: none;
 }
 
-button:hover, button:active {
-    box-shadow: 0 0 18px #2daebf;
+/* white border */
+.dialog, button {
+    border: 1px solid #fff;
+    border-radius: 0.25rem;
 }
 
-.panel {
-    background-color: rgba(11, 16, 22, 0.85);
+.wrapper {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-#control-panel {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 20em;
-    padding: 0.5em;
+.padded {
+    padding: 0.75rem;
 }
 
-#display {
+.ui-layer {
+    display: block;
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
-    left: 20em;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
-#game-screen {
+.dialog {
     display: block;
+    position: absolute;
+    top: 35%;
+    right: 25%;
+    bottom: 35%;
+    left: 25%;
+}
+
+.dialog h1 {
+    margin: 0;
+    padding: 0.25rem;
+    font-size: 1.25rem;
+    background-color: #fff;
+    color: #000;
+}
+
+.dialog .bottom {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align: right;
+}
+
+fieldset {
+    border: none;
+    outline: none;
+}
+
+button {
+    display: inline-block;
+    margin: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    min-width: 4rem;
+    color: white;
+    font-size: 1rem;
+}
+
+button:hover {
+    box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff;
+    text-shadow: 0 0 0.5rem #fff;
+    outline: none;
+}
+
+button:active {
+    box-shadow: 0 0 0.5rem #2daebf, inset 0 0 0.5rem #2daebf;
+    text-shadow: 0 0 0.5rem #2daebf;
+    border-color: #2daebf;
+    outline: none;
+}
+
+#controlPanel {
+    position: absolute;
+    width: 20%;
     height: 100%;
-    margin: 0 auto;
-    box-shadow: inset 0 0 10em #223;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+#dialogBoxMessage {
+    padding-top: 4rem;
+    font-size: 2rem;
+    text-align: center;
+}
+
+#canvas {
+    display: block;
+    position: absolute;
+    width: 80%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 20rem #445;
 }

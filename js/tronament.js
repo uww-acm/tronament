@@ -5,41 +5,43 @@ window.tronament = new function() {
     this.DIRECTION_LEFT = 3;
     this.DIRECTION_RIGHT = 4;
 
-    // the speed the players move at (a multiplier, so 2 means 2x speed)
-    this.speed = 1;
+    this.options = {
+        fastMovement: false
+    }
 
     // some debug options
     this.debug = {
         // indicates if the framerate should be displayed on the canvas
         showFps: false,
         // the current frame rate
-        fps: 0
+        fps: 0,
+        maxFps: 60
     };
 
     // times used for scheduling, keeping track of frame rate, etc...
-    var lastCalledTime, lastSecondTime, lastTickTime;
+    var lastDrawTime, lastSecondTime, lastTickTime;
 
     // variables used for drawing to the canvas
-    var canvas, context;
+    var canvas, ctx;
 
     var aiModules = [];
     var players = [];
     var playerCount;
     var fileChooser;
     var collisionMap = [[]];
-    var boardWidth = 100;
-    var boardHeight = 100;
-    var running = false;
+    var boardWidth = 48;
+    var boardHeight = 48;
     var timer;
+    var running = false;
 
     /**
      * Initializes the Tronament game engine.
      *
      * @param Element canvasElement The canvas element to be used for drawing.
      */
-    this.init = function(canvasElement) {
-        canvas = canvasElement;
-        context = canvas.getContext("2d");
+    this.init = function() {
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
 
         // initialize file chooser
         fileChooser = document.createElement("input");
@@ -49,6 +51,11 @@ window.tronament = new function() {
             handleFiles(this.files);
         }, false);
         document.body.appendChild(fileChooser);
+    }
+
+    this.setResolution = function(width, height) {
+        canvas.width = width;
+        canvas.height = height;
     }
 
     /**
@@ -104,11 +111,10 @@ window.tronament = new function() {
      * Ends the game.
      */
     this.end = function(player) {
-        //alert(player.name + " Wins");
-        cancelAnimationFrame(timer);
+        tronament.ui.showDialog("Game Over", player.name + " Wins!");
         running = false;
-        this.reset();
-        this.start();
+        cancelAnimationFrame(timer);
+        tronament.ui.playAudio("sound2");
     }
 
     /**
@@ -116,9 +122,8 @@ window.tronament = new function() {
      */
     this.reset = function() {
         collisionMap = [[]];
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         this.players = [];
-        running = false;
 
         this.addPlayer("demo-ai", 10, 10, "blue");
         this.addPlayer("demo-ai", boardWidth - 10, boardHeight - 10, "#2daebf");
@@ -132,77 +137,44 @@ window.tronament = new function() {
         mainLoop();
     }
 
+    /**
+     * The main game loop that gets called repeatedly.
+     */
     var mainLoop = function() {
-        // keep running the loop until `running` is false
-        if (running) {
-            // run the next iteration when it is most convenient for the browser
-            timer = requestAnimationFrame(mainLoop);
+        if (!running) {
+            return;
         }
 
-        // initialize all timers
-        if (!lastCalledTime || !lastSecondTime || !lastTickTime) {
-            lastTickTime = lastSecondTime = lastCalledTime = Date.now();
-            this.debug.fps = 0;
-        } else {
-            // update fps every second
-            if (Date.now() - lastSecondTime > 1000) {
-                var delta = (new Date().getTime() - lastCalledTime) / 1000;
-                this.debug.fps = 1 / delta;
-                lastSecondTime = Date.now();
-            }
+        // schedule the main loop to be called again
+        timer = requestAnimationFrame(mainLoop);
 
-            // update main timer
-            lastCalledTime = Date.now();
+        // initialize timers
+        if (!lastDrawTime || !lastSecondTime || !lastTickTime) {
+            lastDrawTime = lastSecondTime = lastTickTime = timestamp();
+        }
+
+        var now = timestamp();
+        // update fps every second
+        if (now - lastSecondTime > 1000) {
+            var delta = (now - lastDrawTime) / 1000;
+            this.debug.fps = 1 / delta;
+            lastSecondTime = now;
         }
 
         // check if it is time to run the next game tick based on speed setting
-        if (Date.now() - lastTickTime > 20 * (1 / this.speed)) {
+        if (this.options.fastMovement || now - lastTickTime > 100) {
             tick();
-            if (this.speed > 1) {
-                for (var i = 0; i < this.speed; i++) {
-                    tick();
-                }
-            }
-            lastTickTime = Date.now(); // update tick time since we just called it
+            lastTickTime = now; // update tick time since we just called it
         }
 
         // render the display canvas
-        render();
+        draw();
+        lastDrawTime = now;
     }.bind(this);
 
-    /**
-     * Renders the game screen to the canvas.
-     */
-    var render = function() {
-        // wipe the canvas clean
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // calculate the size of the trails
-        var squareWidth = canvas.width / boardWidth;
-        var squareHeight = canvas.height / boardHeight;
-
-        // render all trails
-        for (var x = 0; x < collisionMap.length; x++) {
-            if (collisionMap[x] != undefined) {
-                for (var y = 0; y < collisionMap[x].length; y++) {
-                    if (collisionMap[x][y] != undefined) {
-                        var player = collisionMap[x][y];
-                        context.fillStyle = player.color;
-                        context.fillRect(x * squareWidth, y * squareHeight, squareWidth, squareHeight);
-                    }
-                }
-            }
-        }
-
-        // render debug info
-        if (this.debug.showFps) {
-            context.fillStyle = "white";
-            context.font = "24px Silkscreen";
-            context.textAlign = "end";
-            context.textBaseline = "bottom";
-            context.fillText("FPS: " + this.debug.fps.toFixed(2), canvas.width - 10, canvas.height - 10);
-        }
-    }.bind(this);
+    var timestamp = function() {
+        return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    }
 
     /**
      * Executes a single tick of the game loop.
@@ -224,15 +196,58 @@ window.tronament = new function() {
                 this.players[i].y--;
             }
 
-            // draw the trail
-            //context.fillStyle = this.players[i].color;
-            //context.fillRect(this.players[i].x, this.players[i].y, 1, 1);
-
             if (this.query(this.players[i].x, this.players[i].y)) {
                 playerDeath(i);
             } else {
                 fill(this.players[i], this.players[i].x, this.players[i].y);
             }
+        }
+    }.bind(this);
+
+    /**
+     * Renders the game screen to the canvas.
+     */
+    var draw = function() {
+        // wipe the canvas clean
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // calculate the size of the trails
+        var squareWidth = canvas.width / boardWidth;
+        var squareHeight = canvas.height / boardHeight;
+
+        // draw the grid
+        ctx.strokeStyle = "#334";
+        ctx.beginPath();
+        for (var i = 0; i < boardWidth; i++) {
+            ctx.moveTo(i * squareWidth, 0);
+            ctx.lineTo(i * squareWidth, canvas.height);
+        }
+        for (var i = 0; i < boardHeight; i++) {
+            ctx.moveTo(0, i * squareHeight);
+            ctx.lineTo(canvas.width, i * squareHeight);
+        }
+        ctx.stroke();
+
+        // render all trails
+        for (var x = 0; x < collisionMap.length; x++) {
+            if (collisionMap[x] != undefined) {
+                for (var y = 0; y < collisionMap[x].length; y++) {
+                    if (collisionMap[x][y] != undefined) {
+                        var player = collisionMap[x][y];
+                        ctx.fillStyle = player.color;
+                        ctx.fillRect(x * squareWidth, y * squareHeight, squareWidth, squareHeight);
+                    }
+                }
+            }
+        }
+
+        // render debug info
+        if (this.debug.showFps) {
+            ctx.fillStyle = "white";
+            ctx.font = "24px Silkscreen";
+            ctx.textAlign = "end";
+            ctx.textBaseline = "bottom";
+            ctx.fillText("FPS: " + this.debug.fps.toFixed(2), canvas.width - 10, canvas.height - 10);
         }
     }.bind(this);
 

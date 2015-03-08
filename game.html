@@ -5,101 +5,65 @@
     </head>
 
     <body>
-        <div class="panel" id="control-panel">
-            <h1>TRONament</h1>
-            <button id="load-module-button">Load Module</button>
-            <button id="reset-button">Reset</button>
-            <button id="start-button">Start</button>
-            <button id="fullscreen-button">Toggle Full Screen</button>
+        <div class="wrapper">
+            <div class="ui-layer">
+                <div class="padded" id="controlPanel">
+                    <h1>TRONament</h1>
+                    <button id="loadModuleButton">Load Module</button>
+                    <button id="resetButton">Reset</button>
+                    <button id="startButton">Start</button>
+                    <button onclick="tronament.ui.toggleOptions()">Options</button>
 
-            <label for="speed">Speed</label>
-            <select id="speed">
-                <option value="0.25">0.25x</option>
-                <option value="0.5">0.5x</option>
-                <option value="1" selected>1x</option>
-                <option value="2">2x</option>
-                <option value="4">4x</option>
-                <option value="8">8x</option>
-                <option value="32">32x</option>
-                <option value="128">128x</option>
-            </select>
+                    <div class="player-widget">
+                    </div>
 
-            <label for="fps-toggle">Show FPS</label>
-            <input type="checkbox" id="fps-toggle">
-
-            <div class="player-widget">
+                    <div class="player-widget">
+                    </div>
+                </div>
+                <canvas id="canvas" width="640" height="480"></canvas>
             </div>
 
-            <div class="player-widget">
-            </div>
-        </div>
+            <div class="ui-layer" id="optionsMenu" style="display:none;">
+                <div class="dialog">
+                    <h1>Options</h1>
+                    <div class="padded">
+                        <fieldset>
+                            <label for="fastMovementCheckbox">Fast-moving Players</label>
+                            <input type="checkbox" id="fastMovementCheckbox">
+                        </fieldset>
 
-        <div class="panel" id="display">
-            <canvas id="game-screen" width="800" height="800"></canvas>
+                        <fieldset>
+                            <label for="fpsToggle">Show FPS</label>
+                            <input type="checkbox" id="fpsToggle">
+                        </fieldset>
+
+                        <button id="fullscreenButton">Toggle Full Screen</button>
+                    </div>
+
+                    <div class="padded bottom">
+                        <button class="focus" onclick="tronament.ui.hideOptions()">OK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-layer" id="dialogBox" style="display:none;">
+                <div class="dialog">
+                    <h1 id="dialogBoxTitle"></h1>
+                    <div class="padded" id="dialogBoxMessage"></div>
+
+                    <div class="padded bottom">
+                        <button onclick="tronament.ui.hideDialog()">OK</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="js/tronament.js"></script>
+        <script src="js/tronament.ui.js"></script>
         <script src="js/demoAi.js"></script>
         <script src="js/userPlayer.js"></script>
         <script>
-            tronament.init(document.getElementById("game-screen"));
-
-            var buttons = document.querySelectorAll("button");
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].addEventListener("mouseover", function(e) {
-                    var audio = new Audio('assets/sound40.mp3');
-                    audio.play();
-                }, false);1
-            }
-
-            document.getElementById("speed").addEventListener("change", function(e) {
-                tronament.speed = parseFloat(this.value);
-            }, false);
-
-            document.getElementById("fps-toggle").addEventListener("change", function(e) {
-                tronament.debug.showFps = this.checked;
-            }, false);
-
-            document.getElementById("start-button").addEventListener("click", function(e) {
-                tronament.start();
-            }, false);
-
-
-            document.getElementById("load-module-button").addEventListener("click", function(e) {
-                tronament.loadModule();
-            }, false);
-
-            // handle the fullscreen button
-            document.getElementById("fullscreen-button").addEventListener("click", function(e) {
-                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    var element = document.documentElement;
-                    if (element.requestFullscreen) {
-                        element.requestFullscreen();
-                    } else if (element.msRequestFullscreen) {
-                        element.msRequestFullscreen();
-                    } else if (element.mozRequestFullScreen) {
-                        element.mozRequestFullScreen();
-                    } else if (element.webkitRequestFullscreen) {
-                        element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    }
-                }
-            }, false);
-
-            // handle the reset button
-            document.getElementById("reset-button").addEventListener("click", function(e) {
-                clearInterval(tronament.timer);
-                tronament.reset();
-            }, false);
+            tronament.init();
         </script>
     </body>
 </html>

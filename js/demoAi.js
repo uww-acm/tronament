@@ -8,7 +8,7 @@ tronament.aiModule("demo-ai", function() {
      * Moves based on some randomness and some checks.
      */
     this.move = function() {
-        var move = Math.floor((Math.random() * 200) + 1);
+        var move = Math.floor((Math.random() * 50) + 1);
 
         if (move == tronament.DIRECTION_RIGHT && this.directionIsSafe(move)) {
             direction = tronament.DIRECTION_RIGHT;
