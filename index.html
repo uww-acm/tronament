@@ -1,83 +1,69 @@
 <html>
     <head>
-        <title>Tron</title>
-        <style>
-            .wrapper {
-                display: block;
-                width: 800px;
-                height: 600px;
-                margin: 5em auto;
-            }
-            #game-screen {
-                display: block;
-                position: relative;
-                width: 100%;
-                height: 100%;
-            }
-            #game-screen canvas {
-                width: 100%;
-                height: 100%;
-            }
-            #game-screen button {
-                display: block;
-                position: absolute;
-            }
-            #game-screen #fullscreen-button {
-                top: 20px;
-                right: 20px;
-            }
-            #game-screen #reset-button {
-                top: 20px;
-                left: 20px;
-            }
-        </style>
+        <title>TRONament</title>
+        <link rel="stylesheet" type="text/css" href="assets/style.css">
     </head>
 
     <body>
         <div class="wrapper">
-            <main id="game-screen">
-                <canvas id="myCanvas" width="800" height="600"></canvas>
-                <button id="reset-button">Reset</button>
-                <button id="fullscreen-button">Toggle Full Screen</button>
-            </main>
+            <div class="ui-layer">
+                <div class="padded" id="controlPanel">
+                    <h1>TRONament</h1>
+                    <button id="loadModuleButton">Load Module</button>
+                    <button id="resetButton">Reset</button>
+                    <button id="startButton">Start</button>
+                    <button onclick="tronament.ui.toggleOptions()">Options</button>
+
+                    <div class="player-widget">
+                    </div>
+
+                    <div class="player-widget">
+                    </div>
+                </div>
+                <canvas id="canvas" width="640" height="480"></canvas>
+            </div>
+
+            <div class="ui-layer" id="optionsMenu" style="display:none;">
+                <div class="dialog">
+                    <h1>Options</h1>
+                    <div class="padded">
+                        <fieldset>
+                            <label for="fastMovementCheckbox">Fast-moving Players</label>
+                            <input type="checkbox" id="fastMovementCheckbox">
+                        </fieldset>
+
+                        <fieldset>
+                            <label for="fpsToggle">Show FPS</label>
+                            <input type="checkbox" id="fpsToggle">
+                        </fieldset>
+
+                        <button id="fullscreenButton">Toggle Full Screen</button>
+                    </div>
+
+                    <div class="padded bottom">
+                        <button class="focus" onclick="tronament.ui.hideOptions()">OK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-layer" id="dialogBox" style="display:none;">
+                <div class="dialog">
+                    <h1 id="dialogBoxTitle"></h1>
+                    <div class="padded" id="dialogBoxMessage"></div>
+
+                    <div class="padded bottom">
+                        <button onclick="tronament.ui.hideDialog()">OK</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <script src="js/canvas.js"></script>
-        <script src="js/players.js"></script>
-        <script src="js/tron.js"></script>
+        <script src="js/tronament.js"></script>
+        <script src="js/tronament.ui.js"></script>
+        <script src="js/demoAi.js"></script>
+        <script src="js/userPlayer.js"></script>
         <script>
-            // handle the fullscreen button
-            document.getElementById("fullscreen-button").addEventListener("click", function(e) {
-                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    var element = document.getElementById("game-screen");
-                    if (element.requestFullscreen) {
-                        element.requestFullscreen();
-                    } else if (element.msRequestFullscreen) {
-                        element.msRequestFullscreen();
-                    } else if (element.mozRequestFullScreen) {
-                        element.mozRequestFullScreen();
-                    } else if (element.webkitRequestFullscreen) {
-                        element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    }
-                }
-            });
-
-            // handle the reset button
-            document.getElementById("reset-button").addEventListener("click", function(e) {
-                clearInterval(game.timer);
-                game.reset();
-                game.start();
-            });
+            tronament.init();
         </script>
     </body>
 </html>
