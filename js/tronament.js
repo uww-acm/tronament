@@ -83,7 +83,7 @@ window.tronament = new function() {
          * @return Boolean   True if there is an object at the position, otherwise false.
          */
         constructor.prototype.queryRelative = function(x, y) {
-            var playerIndex = tronament.players.indexOf(this);
+            var playerIndex = players.indexOf(this);
             return tronament.query(playerCoordinates[playerIndex].x + x, playerCoordinates[playerIndex].y + y);
         }
 
@@ -144,7 +144,7 @@ window.tronament = new function() {
      * Resets all the game variables and starts a new game running.
      */
     this.start = function() {
-        this.players = [];
+        players = [];
         collisionMap = [[]];
         playerCoordinates = [
             { x: 10, y: 10 },
@@ -157,7 +157,7 @@ window.tronament = new function() {
             var name = document.getElementById("player-ai-" + (i + 1)).value;
             var instance = new this.aiModules[name]();
             instance.color = "blue";
-            this.players[i] = instance;
+            players[i] = instance;
         }
 
         running = true;
@@ -218,9 +218,9 @@ window.tronament = new function() {
      */
     var tick = function() {
         // ask each player to respond with their move
-        for (var i = 0; i < this.players.length; i++) {
+        for (var i = 0; i < players.length; i++) {
             // tell the player to move
-            var move = this.players[i].move(this);
+            var move = players[i].move(this);
 
             // adjust the player position based on the direction
             if (move == this.DIRECTION_RIGHT) {
@@ -236,7 +236,7 @@ window.tronament = new function() {
             if (this.query(playerCoordinates[i].x, playerCoordinates[i].y)) {
                 playerDeath(i);
             } else {
-                fill(this.players[i], playerCoordinates[i].x, playerCoordinates[i].y);
+                fill(players[i], playerCoordinates[i].x, playerCoordinates[i].y);
             }
         }
     }.bind(this);
@@ -258,9 +258,9 @@ window.tronament = new function() {
      * Removes a player from the game.
      */
     var playerDeath = function(i) {
-        this.players.splice(i, 1);
-        if (this.players.length == 1)
-            this.end(this.players[0]);
+        players.splice(i, 1);
+        if (players.length == 1)
+            this.end(players[0]);
     }.bind(this);
 
     /**
