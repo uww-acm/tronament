@@ -29,14 +29,14 @@ window.tronament = new function() {
     // a map of all loaded AI classes
     this.aiModules = [];
     // an array of currently active players
-    var players = [];
+    this.players = [];
     // the dimensions of the board grid
     var boardWidth = 48;
     var boardHeight = 48;
     // a 2d array that stores a collision map for each position on the grid
     var collisionMap = [[]];
-    var timer;
-    var running = false;
+    this.timer;
+    this.running = false;
     // a file chooser control
     var fileChooser;
 
@@ -118,8 +118,8 @@ window.tronament = new function() {
      */
     this.end = function(player) {
         tronament.ui.showDialog("Game Over", player.name + " Wins!");
-        running = false;
-        cancelAnimationFrame(timer);
+        this.running = false;
+        cancelAnimationFrame(this.timer);
         tronament.ui.playAudio("sound2");
     }
 
@@ -139,7 +139,7 @@ window.tronament = new function() {
      * Starts the game loop.
      */
     this.start = function() {
-        running = true;
+        this.running = true;
         mainLoop();
     }
 
@@ -147,12 +147,12 @@ window.tronament = new function() {
      * The main game loop that gets called repeatedly.
      */
     var mainLoop = function() {
-        if (!running) {
+        if (!this.running) {
             return;
         }
 
         // schedule the main loop to be called again
-        timer = requestAnimationFrame(mainLoop);
+        this.timer = requestAnimationFrame(mainLoop);
 
         // initialize timers
         if (!lastDrawTime || !lastSecondTime || !lastTickTime) {

@@ -130,6 +130,7 @@ window.tronament.ui = new function() {
     }, false);
 
     document.getElementById("startButton").addEventListener("click", function(e) {
+        tronament.reset();
         tronament.start();
     }, false);
 
@@ -166,7 +167,8 @@ window.tronament.ui = new function() {
 
     // handle the reset button
     document.getElementById("resetButton").addEventListener("click", function(e) {
-        clearInterval(tronament.timer);
+        tronament.running = false;
+        window.cancelAnimationFrame(tronament.timer);
         tronament.reset();
     }, false);
 }
