@@ -30,6 +30,8 @@ window.tronament = new function() {
     this.aiModules = [];
     // an array of currently active players
     var players = [];
+    // an array containing the coordinates of each player
+    var playerCoordinates = [];
     // the dimensions of the board grid
     var boardWidth = 48;
     var boardHeight = 48;
@@ -37,8 +39,6 @@ window.tronament = new function() {
     var collisionMap = [[]];
     var timer;
     var running = false;
-    // a file chooser control
-    var fileChooser;
 
     /**
      * Initializes the Tronament game engine.
@@ -48,30 +48,45 @@ window.tronament = new function() {
     this.init = function() {
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
-
-        // initialize file chooser
-        fileChooser = document.createElement("input");
-        fileChooser.type = "file";
-        fileChooser.style.display = "none";
-        fileChooser.addEventListener("change", function() {
-            handleFiles(this.files);
-        }, false);
-        document.body.appendChild(fileChooser);
-    }
-
-    this.setResolution = function(width, height) {
-        canvas.width = width;
-        canvas.height = height;
     }
 
     /**
-     * Creates an AI module.
+     * Bootstraps an AI module prototype.
      *
-     * @param  String   name        The module name.
-     * @param  Function constructor An object constructor.
+     * Here there be dragons. This method uses some meta-programming
+     * techniques, so be sure to remember who's who and what's what.
+     *
+     * @param String   name        The module name.
+     * @param Function constructor An object constructor.
      */
     this.aiModule = function(name, constructor) {
-        constructor.name = name;
+        constructor.prototype.name = name;
+
+        // next, define some useful methods for the module to use...
+
+        /**
+         * Queries the game for what is at an absolute location.
+         *
+         * @param  Number  x The x-coordinate of the position.
+         * @param  Number  y The y-coordinate of the position.
+         * @return Boolean   True if there is an object at the position, otherwise false.
+         */
+        constructor.prototype.queryAbsolute = function(x, y) {
+            return tronament.query(x, y);
+        }
+
+        /**
+         * Queries the game for what is at a location relative to the player's current position.
+         *
+         * @param  Number  x The x-coordinate offset of the position.
+         * @param  Number  y The y-coordinate offset of the position.
+         * @return Boolean   True if there is an object at the position, otherwise false.
+         */
+        constructor.prototype.queryRelative = function(x, y) {
+            var playerIndex = tronament.players.indexOf(this);
+            return tronament.query(playerCoordinates[playerIndex].x + x, playerCoordinates[playerIndex].y + y);
+        }
+
         this.aiModules[name] = constructor;
     }
 
@@ -80,28 +95,40 @@ window.tronament = new function() {
      */
     this.loadModule = function() {
         // open the file chooser
-        fileChooser.click();
+        this.ui.openFilePicker(function(files) {
+            // get the chosen file
+            var file = files[0];
+            var objectURL = window.URL.createObjectURL(file);
+
+            // load the script
+            var script = document.createElement("script");
+            script.src = objectURL;
+            document.body.appendChild(script);
+
+            // update the player widgets after the module is loaded
+            script.onload = function() {
+                this.ui.updatePlayerWidgets();
+            }.bind(this);
+        }.bind(this));
     }
 
     /**
-     * Adds a new player to the game
+     * Sets the resolution of the canvas.
      *
-     * @param Player player A player instance to add.
+     * @param Number width  The new canvas width.
+     * @param Number height The new canvas height.
      */
-    this.addPlayer = function(name, x, y, color) {
-        var instance = new this.aiModules[name]();
-        instance.name = name;
-        instance.x = x;
-        instance.y = y;
-        instance.color = color;
-        this.players.push(instance);
+    this.setResolution = function(width, height) {
+        canvas.width = width;
+        canvas.height = height;
     }
 
     /**
-     * Queries the game for what is at a location.
+     * Queries the game for what is at a given location.
      *
-     * @param Number x The x-coordinate of the position.
-     * @param Number y The y-coordinate of the position.
+     * @param  Number  x The x-coordinate of the position.
+     * @param  Number  y The y-coordinate of the position.
+     * @return Boolean   True if there is an object at the position, otherwise false.
      */
     this.query = function(x, y) {
         if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
@@ -114,6 +141,30 @@ window.tronament = new function() {
     }
 
     /**
+     * Resets all the game variables and starts a new game running.
+     */
+    this.start = function() {
+        this.players = [];
+        collisionMap = [[]];
+        playerCoordinates = [
+            { x: 10, y: 10 },
+            { x: boardWidth - 10, y: boardHeight - 10 },
+            { x: 10, y: boardHeight - 10 },
+            { x: boardWidth - 10, y: 10 }
+        ];
+
+        for (var i = 0; i < this.options.playerCount; i++) {
+            var name = document.getElementById("player-ai-" + (i + 1)).value;
+            var instance = new this.aiModules[name]();
+            instance.color = "blue";
+            this.players[i] = instance;
+        }
+
+        running = true;
+        mainLoop();
+    }
+
+    /**
      * Ends the game.
      */
     this.end = function(player) {
@@ -121,26 +172,6 @@ window.tronament = new function() {
         running = false;
         cancelAnimationFrame(timer);
         tronament.ui.playAudio("sound2");
-    }
-
-    /**
-     * Resets the game to an initial state.
-     */
-    this.reset = function() {
-        collisionMap = [[]];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        this.players = [];
-
-        this.addPlayer("demo-ai", 10, 10, "blue");
-        this.addPlayer("demo-ai", boardWidth - 10, boardHeight - 10, "#2daebf");
-    }
-
-    /**
-     * Starts the game loop.
-     */
-    this.start = function() {
-        running = true;
-        mainLoop();
     }
 
     /**
@@ -193,21 +224,43 @@ window.tronament = new function() {
 
             // adjust the player position based on the direction
             if (move == this.DIRECTION_RIGHT) {
-                this.players[i].x++;
+                playerCoordinates[i].x++;
             } else if (move == this.DIRECTION_DOWN) {
-                this.players[i].y++;
+                playerCoordinates[i].y++;
             } else if (move == this.DIRECTION_LEFT) {
-                this.players[i].x--;
+                playerCoordinates[i].x--;
             } else if (move == this.DIRECTION_UP) {
-                this.players[i].y--;
+                playerCoordinates[i].y--;
             }
 
-            if (this.query(this.players[i].x, this.players[i].y)) {
+            if (this.query(playerCoordinates[i].x, playerCoordinates[i].y)) {
                 playerDeath(i);
             } else {
-                fill(this.players[i], this.players[i].x, this.players[i].y);
+                fill(this.players[i], playerCoordinates[i].x, playerCoordinates[i].y);
             }
         }
+    }.bind(this);
+
+    /**
+     * Fills a player's position into the collision map.
+     *
+     * @param Number x The x-coordinate of the position.
+     * @param Number y The y-coordinate of the position.
+     */
+    var fill = function(player, x, y) {
+        if (collisionMap[x] == undefined) {
+            collisionMap[x] = [];
+        }
+        collisionMap[x][y] = player;
+    }.bind(this);
+
+    /**
+     * Removes a player from the game.
+     */
+    var playerDeath = function(i) {
+        this.players.splice(i, 1);
+        if (this.players.length == 1)
+            this.end(this.players[0]);
     }.bind(this);
 
     /**
@@ -255,43 +308,5 @@ window.tronament = new function() {
             ctx.textBaseline = "bottom";
             ctx.fillText("FPS: " + this.debug.fps.toFixed(2), canvas.width - 10, canvas.height - 10);
         }
-    }.bind(this);
-
-    /**
-     * Fills a player's position into the collision map.
-     *
-     * @param Number x The x-coordinate of the position.
-     * @param Number y The y-coordinate of the position.
-     */
-    var fill = function(player, x, y) {
-        if (collisionMap[x] == undefined) {
-            collisionMap[x] = [];
-        }
-        collisionMap[x][y] = player;
-    }.bind(this);
-
-    /**
-     * Removes a player from the game.
-     */
-    var playerDeath = function(i) {
-        this.players.splice(i, 1);
-        if (this.players.length == 1)
-            this.end(this.players[0]);
-    }.bind(this);
-
-    /**
-     * Handles files that are chosen with the file chooser dialog.
-     *
-     * @param Array files An array of files chosen by the user.
-     */
-    var handleFiles = function(files) {
-        // get the chosen file
-        var file = fileChooser.files[0];
-        var objectURL = window.URL.createObjectURL(file);
-
-        // load the script
-        var script = document.createElement("script");
-        script.src = objectURL;
-        document.body.appendChild(script);
     }.bind(this);
 };
