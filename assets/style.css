@@ -21,7 +21,7 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    font-size: 1.3125vmax;
+    font-size: 1.25vmax;
 }
 
 body {
@@ -38,13 +38,13 @@ body {
 }
 
 /* background */
-.ui-layer, .dialog, button {
+.ui-layer, .dialog, button, select {
     background-color: rgba(11, 16, 22, 0.75);
     background-image: none;
 }
 
 /* white border */
-.dialog, button {
+.dialog, button, select {
     border: 1px solid #fff;
     border-radius: 0.25rem;
 }
@@ -93,7 +93,6 @@ body {
     position: absolute;
     right: 0;
     bottom: 0;
-    left: 0;
     text-align: right;
 }
 
@@ -102,7 +101,7 @@ fieldset {
     outline: none;
 }
 
-button {
+button, select {
     display: inline-block;
     margin: 0.5rem;
     padding: 0.5rem 0.75rem;
@@ -111,17 +110,32 @@ button {
     font-size: 1rem;
 }
 
-button:hover {
+button:hover, select:hover {
     box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff;
     text-shadow: 0 0 0.5rem #fff;
     outline: none;
 }
 
-button:active {
+button:active, select:active {
     box-shadow: 0 0 0.5rem #2daebf, inset 0 0 0.5rem #2daebf;
     text-shadow: 0 0 0.5rem #2daebf;
     border-color: #2daebf;
     outline: none;
+}
+
+select {
+    -webkit-appearance: none;
+    padding-right: 1.5rem;
+}
+
+.select:after {
+    content: "\25BE";
+    margin-left: -1.5rem;
+    z-index: -1;
+}
+
+select > option {
+    background-color: black;
 }
 
 #controlPanel {
@@ -131,7 +145,8 @@ button:active {
     top: 0;
     bottom: 0;
     left: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #dialogBoxMessage {

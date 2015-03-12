@@ -5,7 +5,9 @@ window.tronament = new function() {
     this.DIRECTION_LEFT = 3;
     this.DIRECTION_RIGHT = 4;
 
+    // game options
     this.options = {
+        playerCount: 2,
         fastMovement: false
     }
 
@@ -24,15 +26,19 @@ window.tronament = new function() {
     // variables used for drawing to the canvas
     var canvas, ctx;
 
-    var aiModules = [];
+    // a map of all loaded AI classes
+    this.aiModules = [];
+    // an array of currently active players
     var players = [];
-    var playerCount;
-    var fileChooser;
-    var collisionMap = [[]];
+    // the dimensions of the board grid
     var boardWidth = 48;
     var boardHeight = 48;
+    // a 2d array that stores a collision map for each position on the grid
+    var collisionMap = [[]];
     var timer;
     var running = false;
+    // a file chooser control
+    var fileChooser;
 
     /**
      * Initializes the Tronament game engine.
@@ -66,7 +72,7 @@ window.tronament = new function() {
      */
     this.aiModule = function(name, constructor) {
         constructor.name = name;
-        aiModules[name] = constructor;
+        this.aiModules[name] = constructor;
     }
 
     /**
@@ -83,7 +89,7 @@ window.tronament = new function() {
      * @param Player player A player instance to add.
      */
     this.addPlayer = function(name, x, y, color) {
-        var instance = new aiModules[name]();
+        var instance = new this.aiModules[name]();
         instance.name = name;
         instance.x = x;
         instance.y = y;

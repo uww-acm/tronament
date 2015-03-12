@@ -55,6 +55,54 @@ window.tronament.ui = new function() {
         audio.play();
     }
 
+    this.updatePlayerWidgets = function() {
+        var widgetContainer = document.getElementById("playerWidgets");
+        widgetContainer.innerHTML = "";
+
+        for (var i = 0; i < tronament.options.playerCount; i++) {
+            widgetContainer.appendChild(createPlayerWidget(i + 1));
+        }
+    }
+
+    /**
+     * Creates a player widget for the control panel sidebar.
+     * @param  Number  playerNumber The player number the widget belongs to.
+     * @return Element              The widget element.
+     */
+    var createPlayerWidget = function(playerNumber) {
+        var widget = document.createElement("div");
+        widget.className = "player-widget";
+
+        // header
+        widget.appendChild(function() {
+            var e = document.createElement("h2");
+            e.textContent = "Player " + playerNumber;
+            return e;
+        }());
+
+        // ai module select
+        var selectWrapper = document.createElement("span");
+        selectWrapper.className = "select";
+        var select = document.createElement("select");
+
+        // fill select with all AI modules
+        var aiModuleNames = Object.keys(tronament.aiModules);
+        for (var name in tronament.aiModules) {
+            var option = document.createElement("option", name);
+            option.textContent = name;
+            select.appendChild(option);
+        }
+
+        // append and return
+        selectWrapper.appendChild(select);
+        widget.appendChild(selectWrapper);
+        return widget;
+    }.bind(this);
+
+    window.addEventListener("load", function() {
+        this.updatePlayerWidgets();
+    }.bind(this), false);
+
     document.addEventListener("keyup", function(e) {
         if (e.keyCode == 27) {
             this.hideOptions();
