@@ -7,37 +7,39 @@
     <body>
         <div class="wrapper">
             <div class="ui-layer">
-                <div class="padded" id="controlPanel">
+                <div class="padded" id="control-panel">
                     <h1>TRONament</h1>
-                    <button id="loadModuleButton">Load Module</button>
-                    <button id="resetButton">Reset</button>
-                    <button id="startButton">Start</button>
+                    <button id="load-module-button">Load Module</button>
+                    <button id="start-button">Start</button>
                     <button onclick="tronament.ui.toggleOptions()">Options</button>
 
-                    <div class="player-widget">
-                    </div>
+                    <label for="player-count-dropdown">Number of players:</label>
+                    <select id="player-count-dropdown">
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                        <option value="4">Four</option>
+                    </select>
 
-                    <div class="player-widget">
-                    </div>
+                    <div id="player-widgets"></div>
                 </div>
                 <canvas id="canvas" width="640" height="480"></canvas>
             </div>
 
-            <div class="ui-layer" id="optionsMenu" style="display:none;">
+            <div class="ui-layer" id="options-menu" style="display:none;">
                 <div class="dialog">
                     <h1>Options</h1>
                     <div class="padded">
                         <fieldset>
-                            <label for="fastMovementCheckbox">Fast-moving Players</label>
-                            <input type="checkbox" id="fastMovementCheckbox">
+                            <label for="fast-movement-checkbox">Fast-moving Players</label>
+                            <input type="checkbox" id="fast-movement-checkbox">
                         </fieldset>
 
                         <fieldset>
-                            <label for="fpsToggle">Show FPS</label>
-                            <input type="checkbox" id="fpsToggle">
+                            <label for="fps-toggle">Show FPS</label>
+                            <input type="checkbox" id="fps-toggle">
                         </fieldset>
 
-                        <button id="fullscreenButton">Toggle Full Screen</button>
+                        <button id="fullscreen-button">Toggle Full Screen</button>
                     </div>
 
                     <div class="padded bottom">
@@ -46,10 +48,10 @@
                 </div>
             </div>
 
-            <div class="ui-layer" id="dialogBox" style="display:none;">
+            <div class="ui-layer" id="dialog-box" style="display:none;">
                 <div class="dialog">
-                    <h1 id="dialogBoxTitle"></h1>
-                    <div class="padded" id="dialogBoxMessage"></div>
+                    <h1 id="dialog-box-title"></h1>
+                    <div class="padded" id="dialog-box-message"></div>
 
                     <div class="padded bottom">
                         <button onclick="tronament.ui.hideDialog()">OK</button>
@@ -60,8 +62,6 @@
 
         <script src="js/tronament.js"></script>
         <script src="js/tronament.ui.js"></script>
-        <script src="js/demoAi.js"></script>
-        <script src="js/userPlayer.js"></script>
         <script>
             tronament.init();
         </script>

@@ -39,13 +39,13 @@ tronament.aiModule("demo-ai", function() {
      * Makes sure a given direction is a safe move.
      */
     this.directionIsSafe = function(direction) {
-        if (direction == tronament.DIRECTION_RIGHT && tronament.query(this.x + 1, this.y)) {
+        if (direction == tronament.DIRECTION_RIGHT && this.queryRelative(1, 0)) {
             return false;
-        } else if (direction == tronament.DIRECTION_DOWN && tronament.query(this.x, this.y + 1)) {
+        } else if (direction == tronament.DIRECTION_DOWN && this.queryRelative(0, 1)) {
             return false;
-        } else if (direction == tronament.DIRECTION_LEFT && tronament.query(this.x - 1, this.y)) {
+        } else if (direction == tronament.DIRECTION_LEFT && this.queryRelative(-1, 0)) {
             return false;
-        } else if (direction == tronament.DIRECTION_UP && tronament.query(this.x, this.y - 1)) {
+        } else if (direction == tronament.DIRECTION_UP && this.queryRelative(0, -1)) {
             return false;
         }
         return true;
