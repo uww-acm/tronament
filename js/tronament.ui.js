@@ -198,6 +198,7 @@ window.tronament.ui = new function() {
 
         document.getElementById("player-count-dropdown").addEventListener("change", function(e) {
             tronament.options.playerCount = this.value;
+            window.tronament.ui.updatePlayerWidgets();
         }, false);
 
         document.getElementById("fast-movement-checkbox").addEventListener("change", function(e) {
