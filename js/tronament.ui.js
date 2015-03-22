@@ -146,16 +146,33 @@ window.tronament.ui = new function() {
         select.dataset.playerNumber = playerNumber;
 
         // fill select with all AI modules
-        var aiModuleNames = Object.keys(tronament.aiModules);
         for (var name in tronament.aiModules) {
             var option = document.createElement("option");
             option.value = option.textContent = name;
             select.appendChild(option);
         }
 
+        var colors = ["red", "orange", "yellow", "green", "blue", "purple"];
+
+        // color select
+        var colorWrapper = document.createElement("span");
+        colorWrapper.className = "select";
+        var colorSelect = document.createElement("select");
+        colorSelect.id = "player-color-" + playerNumber;
+        colorSelect.dataset.playerNumber = playerNumber;
+
+        // fill color select with colors
+        for (var i = 0; i < colors.length; i++) {
+            var option = document.createElement("option");
+            option.value = option.textContent = colors[i];
+            colorSelect.appendChild(option);
+        }
+
         // append and return
         selectWrapper.appendChild(select);
         widget.appendChild(selectWrapper);
+        colorWrapper.appendChild(colorSelect);
+        widget.appendChild(colorWrapper);
         return widget;
     }.bind(this);
 
