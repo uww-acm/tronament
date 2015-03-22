@@ -156,7 +156,7 @@ window.tronament = new function() {
         for (var i = 0; i < this.options.playerCount; i++) {
             var name = document.getElementById("player-ai-" + (i + 1)).value;
             var instance = new this.aiModules[name]();
-            instance.color = "blue";
+            instance.color = document.getElementById("player-color-" + (i + 1)).value;
             players[i] = instance;
         }
 
