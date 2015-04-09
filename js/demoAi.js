@@ -21,6 +21,7 @@ tronament.aiModule("demo-ai", function() {
         }
 
         if (!this.directionIsSafe(direction)) {
+            this.message("Whoa! Not that way!");
             if (this.directionIsSafe(tronament.DIRECTION_RIGHT)) {
                 direction = tronament.DIRECTION_RIGHT;
             } if (this.directionIsSafe(tronament.DIRECTION_DOWN)) {

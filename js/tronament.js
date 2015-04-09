@@ -87,6 +87,17 @@ window.tronament = new function() {
             return tronament.query(playerCoordinates[playerIndex].x + x, playerCoordinates[playerIndex].y + y);
         }
 
+        /**
+         * Displays a fun message in the Tronament UI.
+         *
+         * @param String message The message to display.
+         */
+        constructor.prototype.message = function(message) {
+            var playerIndex = players.indexOf(this) + 1;
+            var messageBox = document.getElementById("player-message-" + playerIndex);
+            messageBox.value = message;
+        }
+
         this.aiModules[name] = constructor;
     }
 

@@ -168,6 +168,11 @@ window.tronament.ui = new function() {
             colorSelect.appendChild(option);
         }
 
+        // ai message box
+        var messageBox = document.createElement("p");
+        messageBox.innerHTML = "<label>Status:</label><textarea id='player-message-" + playerNumber + "'></textarea>";
+        widget.appendChild(messageBox);
+
         // append and return
         selectWrapper.appendChild(select);
         widget.appendChild(selectWrapper);
