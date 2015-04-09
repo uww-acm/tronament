@@ -51,6 +51,30 @@ window.tronament = new function() {
     }
 
     /**
+     * Gets the dimensions of the board.
+     *
+     * @return Object An object whose "width" property is the width of the board
+     *                and "height" property is the height of the board.
+     */
+    this.getBoardSize = function() {
+        return {
+            width: boardWidth,
+            height: boardHeight
+        };
+    }
+
+    /**
+     * Sets the dimensions of the board.
+     *
+     * @param Number width  The new board width.
+     * @param Number height The new board height.
+     */
+    this.setBoardSize = function(width, height) {
+        boardWidth = width;
+        boardHeight = height;
+    }
+
+    /**
      * Bootstraps an AI module prototype.
      *
      * Here there be dragons. This method uses some meta-programming
@@ -94,7 +118,7 @@ window.tronament = new function() {
          */
         constructor.prototype.message = function(message) {
             var playerIndex = players.indexOf(this) + 1;
-            var messageBox = document.getElementById("player-message-" + playerIndex);
+            var messageBox = document.getElementById("player-" + playerIndex + "-message");
             messageBox.value = message;
         }
 

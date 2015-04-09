@@ -146,6 +146,12 @@ select > option {
     background-color: black;
 }
 
+input[type="text"] {
+    display: block;
+    margin: 0.5rem;
+    padding: 0.5rem;
+}
+
 textarea {
     display: block;
     width: 90% !important;
