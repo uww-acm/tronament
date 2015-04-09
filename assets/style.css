@@ -14,6 +14,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     font-family: "Silkscreen";
+    color: white;
 }
 
 html, body {
@@ -25,7 +26,6 @@ html, body {
 }
 
 body {
-    color: white;
     background-image: url("background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
@@ -46,13 +46,13 @@ h2 {
 }
 
 /* background */
-.ui-layer, .dialog, button, select {
+.ui-layer, .dialog, button, select, input, textarea {
     background-color: rgba(11, 16, 22, 0.75);
     background-image: none;
 }
 
 /* white border */
-.dialog, button, select {
+.dialog, button, select, input, textarea {
     border: 1px solid #fff;
     border-radius: 0.25rem;
 }
@@ -144,6 +144,14 @@ select {
 
 select > option {
     background-color: black;
+}
+
+textarea {
+    display: block;
+    width: 90% !important;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    resize: none;
 }
 
 #control-panel {
