@@ -229,10 +229,10 @@ window.tronament.ui = new function() {
 
         // handle the board size options
         document.getElementById("option-board-width").addEventListener("change", function(e) {
-            tronament.setBoardSize(this.value, tronament.getBoardSize().height);
+            tronament.setBoardSize(parseInt(this.value), tronament.getBoardSize().height);
         }, false);
         document.getElementById("option-board-height").addEventListener("change", function(e) {
-            tronament.setBoardSize(tronament.getBoardSize().width, this.value);
+            tronament.setBoardSize(tronament.getBoardSize().width, parseInt(this.value));
         }, false);
     }.bind(this), false);
 }
