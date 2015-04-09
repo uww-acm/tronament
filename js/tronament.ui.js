@@ -170,7 +170,7 @@ window.tronament.ui = new function() {
 
         // ai message box
         var messageBox = document.createElement("p");
-        messageBox.innerHTML = "<label>Status:</label><textarea id='player-message-" + playerNumber + "'></textarea>";
+        messageBox.innerHTML = "<label>Status:</label><textarea readonly id='player-" + playerNumber + "-message'></textarea>";
         widget.appendChild(messageBox);
 
         // append and return
@@ -225,6 +225,14 @@ window.tronament.ui = new function() {
         // handle the fullscreen button
         document.getElementById("fullscreen-button").addEventListener("click", function(e) {
             tronament.ui.toggleFullscreen();
+        }, false);
+
+        // handle the board size options
+        document.getElementById("option-board-width").addEventListener("change", function(e) {
+            tronament.setBoardSize(this.value, tronament.getBoardSize().height);
+        }, false);
+        document.getElementById("option-board-height").addEventListener("change", function(e) {
+            tronament.setBoardSize(tronament.getBoardSize().width, this.value);
         }, false);
     }.bind(this), false);
 }
