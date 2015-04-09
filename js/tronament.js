@@ -182,10 +182,10 @@ window.tronament = new function() {
         players = [];
         collisionMap = [[]];
         playerCoordinates = [
-            { x: 10, y: 10 },
-            { x: boardWidth - 10, y: boardHeight - 10 },
-            { x: 10, y: boardHeight - 10 },
-            { x: boardWidth - 10, y: 10 }
+            { x: Math.floor(boardWidth * 0.1), y: Math.floor(boardHeight * 0.1) },
+            { x: Math.floor(boardWidth * 0.9), y: Math.floor(boardHeight * 0.9) },
+            { x: Math.floor(boardWidth * 0.1), y: Math.floor(boardHeight * 0.9) },
+            { x: Math.floor(boardWidth * 0.9), y: Math.floor(boardHeight * 0.1) }
         ];
 
         for (var i = 0; i < this.options.playerCount; i++) {
