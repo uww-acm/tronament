@@ -1,9 +1,16 @@
 window.tronament = new function() {
-    // some constants
-    this.DIRECTION_UP = 1;
-    this.DIRECTION_DOWN = 2;
-    this.DIRECTION_LEFT = 3;
-    this.DIRECTION_RIGHT = 4;
+    // some constant enums
+    this.Direction = Object.freeze({
+        UP: 1,
+        DOWN: 2,
+        LEFT: 3,
+        RIGHT: 4
+    });
+    this.Space = Object.freeze({
+        EMPTY: 0,
+        WALL: 1,
+        OUT_OF_BOUNDS: 2
+    });
 
     // game options
     this.options = {
@@ -94,7 +101,7 @@ window.tronament = new function() {
          *
          * @param  Number  x The x-coordinate of the position.
          * @param  Number  y The y-coordinate of the position.
-         * @return Boolean   True if there is an object at the position, otherwise false.
+         * @return Number    A Space value indicating what is in the space.
          */
         constructor.prototype.queryAbsolute = function(x, y) {
             return tronament.query(x, y);
@@ -105,7 +112,7 @@ window.tronament = new function() {
          *
          * @param  Number  x The x-coordinate offset of the position.
          * @param  Number  y The y-coordinate offset of the position.
-         * @return Boolean   True if there is an object at the position, otherwise false.
+         * @return Number    A Space value indicating what is in the space.
          */
         constructor.prototype.queryRelative = function(x, y) {
             var playerIndex = players.indexOf(this);
@@ -118,8 +125,8 @@ window.tronament = new function() {
          * @param String message The message to display.
          */
         constructor.prototype.message = function(message) {
-            var playerIndex = players.indexOf(this) + 1;
-            var messageBox = document.getElementById("player-" + playerIndex + "-message");
+            var playerIndex = players.indexOf(this);
+            var messageBox = document.getElementById("player-" + (playerIndex + 1) + "-message");
             messageBox.value = message;
         }
 
@@ -165,16 +172,16 @@ window.tronament = new function() {
      *
      * @param  Number  x The x-coordinate of the position.
      * @param  Number  y The y-coordinate of the position.
-     * @return Boolean   True if there is an object at the position, otherwise false.
+     * @return Number    A Space value indicating what is in the space.
      */
     this.query = function(x, y) {
         if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
-            return true;
+            return this.Space.OUT_OF_BOUNDS;
         }
         if (collisionMap[x] != undefined && collisionMap[x][y] != undefined) {
-            return true;
+            return this.Space.WALL;
         }
-        return false;
+        return this.Space.EMPTY;
     }
 
     /**
@@ -285,13 +292,13 @@ window.tronament = new function() {
             }
 
             // adjust the player position based on the direction
-            if (move == this.DIRECTION_RIGHT) {
+            if (move == this.Direction.RIGHT) {
                 playerCoordinates[i].x++;
-            } else if (move == this.DIRECTION_DOWN) {
+            } else if (move == this.Direction.DOWN) {
                 playerCoordinates[i].y++;
-            } else if (move == this.DIRECTION_LEFT) {
+            } else if (move == this.Direction.LEFT) {
                 playerCoordinates[i].x--;
-            } else if (move == this.DIRECTION_UP) {
+            } else if (move == this.Direction.UP) {
                 playerCoordinates[i].y--;
             }
 
