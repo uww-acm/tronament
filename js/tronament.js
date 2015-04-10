@@ -42,10 +42,10 @@ window.tronament = new function() {
     // an array containing the coordinates of each player
     var playerCoordinates = [];
     // the dimensions of the board grid
-    var boardWidth = 48;
-    var boardHeight = 48;
+    var boardWidth, boardHeight;
     // a 2d array that stores a collision map for each position on the grid
     var collisionMap = [[]];
+    var squareWidth, squareHeight;
     var timer;
     var running = false;
     var lastLoadedModule;
@@ -59,6 +59,7 @@ window.tronament = new function() {
     this.init = function() {
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
+        this.setBoardSize(48, 48);
     }
 
     /**
@@ -83,6 +84,10 @@ window.tronament = new function() {
     this.setBoardSize = function(width, height) {
         boardWidth = width;
         boardHeight = height;
+
+        // do some calculations ahead of time for rendering performance
+        squareWidth = Math.round(canvas.width / boardWidth);
+        squareHeight = Math.round(canvas.height / boardHeight);
     }
 
     /**
@@ -370,8 +375,6 @@ window.tronament = new function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // calculate the size of the trails
-        var squareWidth = canvas.width / boardWidth;
-        var squareHeight = canvas.height / boardHeight;
 
         // draw the grid
         ctx.strokeStyle = "#334";
