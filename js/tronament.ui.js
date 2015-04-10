@@ -39,10 +39,18 @@ window.tronament.ui = new function() {
      * @param String title   The title of the dialog box.
      * @param String message The dialog box message.
      */
-    this.showDialog = function(title, message) {
+    this.showDialog = function(title, message, bigText) {
+        var dialogBox = document.getElementById("dialog-box");
+
         document.getElementById("dialog-box-title").textContent = title;
         document.getElementById("dialog-box-message").textContent = message;
-        document.getElementById("dialog-box").style.display = "block";
+        dialogBox.style.display = "block";
+        if (bigText) {
+            dialogBox.classList.add("big-text");
+        } else {
+            dialogBox.classList.remove("big-text");
+        }
+
         document.querySelector("#dialog-box button").focus();
         dialogBoxVisible = true;
     }

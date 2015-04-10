@@ -39,6 +39,7 @@ window.tronament = new function() {
     var collisionMap = [[]];
     var timer;
     var running = false;
+    var lastLoadedModule;
 
     /**
      * Initializes the Tronament game engine.
@@ -123,6 +124,7 @@ window.tronament = new function() {
         }
 
         this.aiModules[name] = constructor;
+        lastLoadedModule = name;
     }
 
     /**
@@ -190,7 +192,14 @@ window.tronament = new function() {
 
         for (var i = 0; i < this.options.playerCount; i++) {
             var name = document.getElementById("player-ai-" + (i + 1)).value;
-            var instance = new this.aiModules[name]();
+
+            try {
+                var instance = new this.aiModules[name]();
+            } catch(e) {
+                tronament.ui.showDialog("Error", "The A.I. \"" + name + "\" created the following exception: " + e.message);
+                return;
+            }
+
             instance.color = document.getElementById("player-color-" + (i + 1)).value;
             players[i] = instance;
         }
@@ -203,10 +212,14 @@ window.tronament = new function() {
      * Ends the game.
      */
     this.end = function(player) {
-        tronament.ui.showDialog("Game Over", player.name + " Wins!");
+        terminateLoop();
+        tronament.ui.showDialog("Game Over", player.name + " Wins!", true);
+        tronament.ui.playAudio("sound2");
+    }
+
+    var terminateLoop = function() {
         running = false;
         cancelAnimationFrame(timer);
-        tronament.ui.playAudio("sound2");
     }
 
     /**
@@ -255,7 +268,13 @@ window.tronament = new function() {
         // ask each player to respond with their move
         for (var i = 0; i < players.length; i++) {
             // tell the player to move
-            var move = players[i].move(this);
+            try {
+                var move = players[i].move(this);
+            } catch(e) {
+                tronament.ui.showDialog("Error", "The A.I. \"" + players[i].name + "\" created the following exception: " + e.message);
+                terminateLoop();
+                return;
+            }
 
             // adjust the player position based on the direction
             if (move == this.DIRECTION_RIGHT) {

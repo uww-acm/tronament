@@ -171,7 +171,7 @@ textarea {
     overflow-y: auto;
 }
 
-#dialog-box-message {
+.big-text #dialog-box-message {
     padding-top: 4rem;
     font-size: 2rem;
     text-align: center;
