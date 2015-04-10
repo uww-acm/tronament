@@ -6,7 +6,7 @@ tronament.aiModule("example-ai", function() {
     this.publicValue = secretValue; // public
 
     this.move = function() {
-        if (this.queryRelative(0, -1) == tronament.Space.EMPTY) {
+        if (this.queryRelative(0, -1) != tronament.Space.EMPTY) {
             return tronament.Direction.LEFT;
         } else {
             return tronament.Direction.UP;

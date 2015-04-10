@@ -8,8 +8,10 @@ window.tronament = new function() {
     });
     this.Space = Object.freeze({
         EMPTY: 0,
-        WALL: 1,
-        OUT_OF_BOUNDS: 2
+        TRAIL: 1,
+        OPPONENT: 2,
+        WALL: 4,
+        OUT_OF_BOUNDS: 8
     });
 
     // game options
@@ -47,6 +49,7 @@ window.tronament = new function() {
     var timer;
     var running = false;
     var lastLoadedModule;
+    var alivePlayerCount = 0;
 
     /**
      * Initializes the Tronament game engine.
@@ -104,7 +107,15 @@ window.tronament = new function() {
          * @return Number    A Space value indicating what is in the space.
          */
         constructor.prototype.queryAbsolute = function(x, y) {
-            return tronament.query(x, y);
+            var playerIndex = players.indexOf(this);
+            var result = tronament.query(x, y);
+
+            // do an additional check for opponent trail
+            if (result == tronament.Space.TRAIL && collisionMap[x][y] != playerIndex) {
+                result = result | tronament.Space.OPPONENT;
+            }
+
+            return result;
         }
 
         /**
@@ -116,7 +127,7 @@ window.tronament = new function() {
          */
         constructor.prototype.queryRelative = function(x, y) {
             var playerIndex = players.indexOf(this);
-            return tronament.query(playerCoordinates[playerIndex].x + x, playerCoordinates[playerIndex].y + y);
+            return this.queryAbsolute(playerCoordinates[playerIndex].x + x, playerCoordinates[playerIndex].y + y);
         }
 
         /**
@@ -179,7 +190,7 @@ window.tronament = new function() {
             return this.Space.OUT_OF_BOUNDS;
         }
         if (collisionMap[x] != undefined && collisionMap[x][y] != undefined) {
-            return this.Space.WALL;
+            return this.Space.TRAIL;
         }
         return this.Space.EMPTY;
     }
@@ -197,6 +208,7 @@ window.tronament = new function() {
             { x: Math.floor(boardWidth * 0.9), y: Math.floor(boardHeight * 0.1) }
         ];
 
+        // create player objects
         for (var i = 0; i < this.options.playerCount; i++) {
             // get the desired a.i. module for this player
             var name = document.getElementById("player-ai-" + (i + 1)).value;
@@ -219,6 +231,7 @@ window.tronament = new function() {
             }
         }
 
+        alivePlayerCount = players.length;
         running = true;
         mainLoop();
     }
@@ -228,7 +241,7 @@ window.tronament = new function() {
      */
     this.end = function(player) {
         terminateLoop();
-        tronament.ui.showDialog("Game Over", player.name + " Wins!", true);
+        tronament.ui.showDialog("Game Over", "Player " + (players.indexOf(player) + 1) + " (" + player.name + ") Wins!", true);
         tronament.ui.playAudio("sound2");
     }
 
@@ -282,6 +295,10 @@ window.tronament = new function() {
     var tick = function() {
         // ask each player to respond with their move
         for (var i = 0; i < players.length; i++) {
+            // ignore dead players :(
+            if (players[i].__dead)
+                continue;
+
             // tell the player to move
             try {
                 var move = players[i].move(this);
@@ -305,7 +322,7 @@ window.tronament = new function() {
             if (this.query(playerCoordinates[i].x, playerCoordinates[i].y)) {
                 playerDeath(i);
             } else {
-                fill(players[i], playerCoordinates[i].x, playerCoordinates[i].y);
+                fill(i, playerCoordinates[i].x, playerCoordinates[i].y);
             }
         }
     }.bind(this);
@@ -316,11 +333,11 @@ window.tronament = new function() {
      * @param Number x The x-coordinate of the position.
      * @param Number y The y-coordinate of the position.
      */
-    var fill = function(player, x, y) {
+    var fill = function(playerIndex, x, y) {
         if (collisionMap[x] == undefined) {
             collisionMap[x] = [];
         }
-        collisionMap[x][y] = player;
+        collisionMap[x][y] = playerIndex;
     }.bind(this);
 
     /**
@@ -333,9 +350,15 @@ window.tronament = new function() {
         }
 
         // remove player from game
-        players.splice(i, 1);
-        if (players.length == 1) {
-            this.end(players[0]);
+        alivePlayerCount--;
+        players[i].__dead = true;
+
+        if (alivePlayerCount <= 1) {
+            for (var i = 0; i < players.length; i++) {
+                if (!players[i].__dead) {
+                    this.end(players[i]);
+                }
+            }
         }
     }.bind(this);
 
@@ -368,7 +391,7 @@ window.tronament = new function() {
             if (collisionMap[x] != undefined) {
                 for (var y = 0; y < collisionMap[x].length; y++) {
                     if (collisionMap[x][y] != undefined) {
-                        var player = collisionMap[x][y];
+                        var player = players[collisionMap[x][y]];
                         ctx.fillStyle = player.color;
                         ctx.fillRect(x * squareWidth, y * squareHeight, squareWidth, squareHeight);
                     }
