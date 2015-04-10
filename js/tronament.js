@@ -191,8 +191,10 @@ window.tronament = new function() {
         ];
 
         for (var i = 0; i < this.options.playerCount; i++) {
+            // get the desired a.i. module for this player
             var name = document.getElementById("player-ai-" + (i + 1)).value;
 
+            // initialize an a.i. module instance
             try {
                 var instance = new this.aiModules[name]();
             } catch(e) {
@@ -200,8 +202,14 @@ window.tronament = new function() {
                 return;
             }
 
+            // set player's color as requested
             instance.color = document.getElementById("player-color-" + (i + 1)).value;
+
+            // let the a.i. know we are ready
             players[i] = instance;
+            if (typeof instance.onReady === "function") {
+                instance.onReady();
+            }
         }
 
         running = true;
@@ -312,9 +320,16 @@ window.tronament = new function() {
      * Removes a player from the game.
      */
     var playerDeath = function(i) {
+        // tell the a.i. that it died
+        if (typeof players[i].onDeath === "function") {
+            players[i].onDeath();
+        }
+
+        // remove player from game
         players.splice(i, 1);
-        if (players.length == 1)
+        if (players.length == 1) {
             this.end(players[0]);
+        }
     }.bind(this);
 
     /**
