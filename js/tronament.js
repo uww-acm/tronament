@@ -39,6 +39,7 @@ window.tronament = new function() {
     var collisionMap = [[]];
     var timer;
     var running = false;
+    var lastLoadedModule;
 
     /**
      * Initializes the Tronament game engine.
@@ -123,6 +124,7 @@ window.tronament = new function() {
         }
 
         this.aiModules[name] = constructor;
+        lastLoadedModule = name;
     }
 
     /**
@@ -189,10 +191,25 @@ window.tronament = new function() {
         ];
 
         for (var i = 0; i < this.options.playerCount; i++) {
+            // get the desired a.i. module for this player
             var name = document.getElementById("player-ai-" + (i + 1)).value;
-            var instance = new this.aiModules[name]();
+
+            // initialize an a.i. module instance
+            try {
+                var instance = new this.aiModules[name]();
+            } catch(e) {
+                tronament.ui.showDialog("Error", "The A.I. \"" + name + "\" created the following exception: " + e.message);
+                return;
+            }
+
+            // set player's color as requested
             instance.color = document.getElementById("player-color-" + (i + 1)).value;
+
+            // let the a.i. know we are ready
             players[i] = instance;
+            if (typeof instance.onReady === "function") {
+                instance.onReady();
+            }
         }
 
         running = true;
@@ -203,10 +220,14 @@ window.tronament = new function() {
      * Ends the game.
      */
     this.end = function(player) {
-        tronament.ui.showDialog("Game Over", player.name + " Wins!");
+        terminateLoop();
+        tronament.ui.showDialog("Game Over", player.name + " Wins!", true);
+        tronament.ui.playAudio("sound2");
+    }
+
+    var terminateLoop = function() {
         running = false;
         cancelAnimationFrame(timer);
-        tronament.ui.playAudio("sound2");
     }
 
     /**
@@ -255,7 +276,13 @@ window.tronament = new function() {
         // ask each player to respond with their move
         for (var i = 0; i < players.length; i++) {
             // tell the player to move
-            var move = players[i].move(this);
+            try {
+                var move = players[i].move(this);
+            } catch(e) {
+                tronament.ui.showDialog("Error", "The A.I. \"" + players[i].name + "\" created the following exception: " + e.message);
+                terminateLoop();
+                return;
+            }
 
             // adjust the player position based on the direction
             if (move == this.DIRECTION_RIGHT) {
@@ -293,9 +320,16 @@ window.tronament = new function() {
      * Removes a player from the game.
      */
     var playerDeath = function(i) {
+        // tell the a.i. that it died
+        if (typeof players[i].onDeath === "function") {
+            players[i].onDeath();
+        }
+
+        // remove player from game
         players.splice(i, 1);
-        if (players.length == 1)
+        if (players.length == 1) {
             this.end(players[0]);
+        }
     }.bind(this);
 
     /**

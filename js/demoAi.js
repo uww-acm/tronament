@@ -4,6 +4,14 @@
 tronament.aiModule("demo-ai", function() {
     var direction = 1;
 
+    this.onReady = function() {
+        this.message("It's go-time!");
+    }
+
+    this.onDeath = function() {
+        this.message("Curse you, Lightyear!");
+    }
+
     /**
      * Moves based on some randomness and some checks.
      */
