@@ -13,20 +13,20 @@ tronament.aiModule("user", function() {
      */
     this.checkKeyPressed = function(e) {
         //up
-        if (e.keyCode == 38 && direction != tronament.Direction.DOWN) {
-            direction = tronament.Direction.UP;
+        if (e.keyCode == 38 && direction != tronament.SOUTH) {
+            direction = tronament.NORTH;
         }
         //down
-        else if (e.keyCode == 40 && direction != tronament.Direction.UP) {
-            direction = tronament.Direction.DOWN;
+        else if (e.keyCode == 40 && direction != tronament.NORTH) {
+            direction = tronament.SOUTH;
         }
         //left
-        else if (e.keyCode == 37 && direction != tronament.Direction.RIGHT) {
-            direction = tronament.Direction.LEFT;
+        else if (e.keyCode == 37 && direction != tronament.EAST) {
+            direction = tronament.WEST;
         }
         //right
-        else if (e.keyCode == 39 && direction != tronament.Direction.LEFT) {
-            direction = tronament.Direction.RIGHT;
+        else if (e.keyCode == 39 && direction != tronament.WEST) {
+            direction = tronament.EAST;
         }
     }
 

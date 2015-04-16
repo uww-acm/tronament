@@ -2,14 +2,15 @@
  * Super smart AI.
  */
 tronament.aiModule("example-ai", function() {
-    var secretValue = 3; // private
-    this.publicValue = secretValue; // public
-
     this.move = function() {
-        if (this.queryRelative(0, -1) != tronament.Space.EMPTY) {
-            return tronament.Direction.LEFT;
+        if (this.queryRelative(0, -1) == tronament.EMPTY) {
+            return tronament.NORTH;
+        } else if (this.queryRelative(0, 1) == tronament.EMPTY) {
+            return tronament.SOUTH;
+        } else if (this.queryRelative(1, 0) == tronament.EMPTY) {
+            return tronament.EAST;
         } else {
-            return tronament.Direction.UP;
+            return tronament.WEST;
         }
     }
 });
