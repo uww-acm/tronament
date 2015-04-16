@@ -18,26 +18,26 @@ tronament.aiModule("demo-ai", function() {
     this.move = function() {
         var move = Math.floor((Math.random() * 50) + 1);
 
-        if (move == tronament.Direction.RIGHT && this.directionIsSafe(move)) {
-            direction = tronament.Direction.RIGHT;
-        } else if (move == tronament.Direction.DOWN && this.directionIsSafe(move)) {
-            direction = tronament.Direction.DOWN;
-        } else if (move == tronament.Direction.LEFT && this.directionIsSafe(move)) {
-            direction = tronament.Direction.LEFT;
-        } else if (move == tronament.Direction.UP && this.directionIsSafe(move)) {
-            direction = tronament.Direction.UP;
+        if (move == tronament.EAST && this.directionIsSafe(move)) {
+            direction = tronament.EAST;
+        } else if (move == tronament.SOUTH && this.directionIsSafe(move)) {
+            direction = tronament.SOUTH;
+        } else if (move == tronament.WEST && this.directionIsSafe(move)) {
+            direction = tronament.WEST;
+        } else if (move == tronament.NORTH && this.directionIsSafe(move)) {
+            direction = tronament.NORTH;
         }
 
         if (!this.directionIsSafe(direction)) {
             this.message("Whoa! Not that way!");
-            if (this.directionIsSafe(tronament.Direction.RIGHT)) {
-                direction = tronament.Direction.RIGHT;
-            } if (this.directionIsSafe(tronament.Direction.DOWN)) {
-                direction = tronament.Direction.DOWN;
-            } if (this.directionIsSafe(tronament.Direction.LEFT)) {
-                direction = tronament.Direction.LEFT;
-            } if (this.directionIsSafe(tronament.Direction.UP)) {
-                direction = tronament.Direction.UP;
+            if (this.directionIsSafe(tronament.EAST)) {
+                direction = tronament.EAST;
+            } if (this.directionIsSafe(tronament.SOUTH)) {
+                direction = tronament.SOUTH;
+            } if (this.directionIsSafe(tronament.WEST)) {
+                direction = tronament.WEST;
+            } if (this.directionIsSafe(tronament.NORTH)) {
+                direction = tronament.NORTH;
             }
         }
 
@@ -48,13 +48,13 @@ tronament.aiModule("demo-ai", function() {
      * Makes sure a given direction is a safe move.
      */
     this.directionIsSafe = function(direction) {
-        if (direction == tronament.Direction.RIGHT && this.queryRelative(1, 0)) {
+        if (direction == tronament.EAST && this.queryRelative(1, 0)) {
             return false;
-        } else if (direction == tronament.Direction.DOWN && this.queryRelative(0, 1)) {
+        } else if (direction == tronament.SOUTH && this.queryRelative(0, 1)) {
             return false;
-        } else if (direction == tronament.Direction.LEFT && this.queryRelative(-1, 0)) {
+        } else if (direction == tronament.WEST && this.queryRelative(-1, 0)) {
             return false;
-        } else if (direction == tronament.Direction.UP && this.queryRelative(0, -1)) {
+        } else if (direction == tronament.NORTH && this.queryRelative(0, -1)) {
             return false;
         }
         return true;
