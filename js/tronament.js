@@ -1,18 +1,15 @@
 window.tronament = new function() {
-    // some constant enums
-    this.Direction = Object.freeze({
-        UP: 1,
-        DOWN: 2,
-        LEFT: 3,
-        RIGHT: 4
-    });
-    this.Space = Object.freeze({
-        EMPTY: 0,
-        TRAIL: 1,
-        OPPONENT: 2,
-        WALL: 4,
-        OUT_OF_BOUNDS: 8
-    });
+    // some constants
+    this.NORTH = 1;
+    this.SOUTH = 2;
+    this.WEST = 3;
+    this.EAST = 4;
+
+    this.EMPTY = 0;
+    this.TRAIL = 1;
+    this.OPPONENT = 2;
+    this.WALL = 4;
+    this.OUT_OF_BOUNDS = 8;
 
     // game options
     this.options = {
@@ -116,8 +113,8 @@ window.tronament = new function() {
             var result = tronament.query(x, y);
 
             // do an additional check for opponent trail
-            if (result == tronament.Space.TRAIL && collisionMap[x][y] != playerIndex) {
-                result = result | tronament.Space.OPPONENT;
+            if (result == tronament.TRAIL && collisionMap[x][y] != playerIndex) {
+                result = result | tronament.OPPONENT;
             }
 
             return result;
@@ -192,12 +189,12 @@ window.tronament = new function() {
      */
     this.query = function(x, y) {
         if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
-            return this.Space.OUT_OF_BOUNDS;
+            return this.OUT_OF_BOUNDS;
         }
         if (collisionMap[x] != undefined && collisionMap[x][y] != undefined) {
-            return this.Space.TRAIL;
+            return this.TRAIL;
         }
-        return this.Space.EMPTY;
+        return this.EMPTY;
     }
 
     /**
@@ -314,13 +311,13 @@ window.tronament = new function() {
             }
 
             // adjust the player position based on the direction
-            if (move == this.Direction.RIGHT) {
+            if (move == this.EAST) {
                 playerCoordinates[i].x++;
-            } else if (move == this.Direction.DOWN) {
+            } else if (move == this.SOUTH) {
                 playerCoordinates[i].y++;
-            } else if (move == this.Direction.LEFT) {
+            } else if (move == this.WEST) {
                 playerCoordinates[i].x--;
-            } else if (move == this.Direction.UP) {
+            } else if (move == this.NORTH) {
                 playerCoordinates[i].y--;
             }
 
@@ -376,19 +373,6 @@ window.tronament = new function() {
 
         // calculate the size of the trails
 
-        // draw the grid
-        ctx.strokeStyle = "#334";
-        ctx.beginPath();
-        for (var i = 0; i < boardWidth; i++) {
-            ctx.moveTo(i * squareWidth, 0);
-            ctx.lineTo(i * squareWidth, canvas.height);
-        }
-        for (var i = 0; i < boardHeight; i++) {
-            ctx.moveTo(0, i * squareHeight);
-            ctx.lineTo(canvas.width, i * squareHeight);
-        }
-        ctx.stroke();
-
         // render all trails
         for (var x = 0; x < collisionMap.length; x++) {
             if (collisionMap[x] != undefined) {
@@ -401,6 +385,19 @@ window.tronament = new function() {
                 }
             }
         }
+
+        // draw the grid
+        ctx.strokeStyle = "#334";
+        ctx.beginPath();
+        for (var i = 0; i < boardWidth; i++) {
+            ctx.moveTo(i * squareWidth, 0);
+            ctx.lineTo(i * squareWidth, canvas.height);
+        }
+        for (var i = 0; i < boardHeight; i++) {
+            ctx.moveTo(0, i * squareHeight);
+            ctx.lineTo(canvas.width, i * squareHeight);
+        }
+        ctx.stroke();
 
         // render debug info
         if (this.debug.showFps) {
